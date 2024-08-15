@@ -11,6 +11,13 @@ actions:
       - phosh-pim
       - phosh-full
 
+  - action: apt
+    recommends: true
+    description: Install additional packages
+    packages:
+      - less
+      - sudo
+
   - action: run
     description: Disable getty in the Phosh environment
     chroot: true
