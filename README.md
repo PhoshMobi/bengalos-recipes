@@ -11,7 +11,7 @@ To build the image, you need to have `debos` and `bmaptool`. On a Debian-based
 system, install these dependencies by typing the following command in a terminal:
 
 ```
-sudo apt install debos bmap-tools xz-utils
+sudo apt install debos bmap-tools xz-utils zerofree
 ```
 
 The image builds are currently being performed on Debian Trixie so we recommend

@@ -113,6 +113,7 @@ fi
 [ "${miniramfs}" ] && ARGS="${ARGS} -t miniramfs:true"
 [ "${contrib}" ] && ARGS="${ARGS} -t contrib:true"
 [ "${zram}" ] && ARGS="${ARGS} -t zram:true"
+[ "${do_compress}" ] && ARGS="${ARGS} -t compress:true"
 
 ARGS="${ARGS} -t architecture:${arch} -t family:${family} -t device:${device} \
             -t partitiontable:${partitiontable} -t filesystem:${filesystem} \
@@ -134,8 +135,8 @@ fi
 
 if [ "$do_compress" ]; then
   echo "Compressing ${image_file}..."
+  fallocate -v --dig-holes ${image_file}.img
   [ -f "${image_file}.img" ] && xz --compress --keep --force "${image_file}.img"
-  [ -f "${image_file}.rootfs.img" ] && tar cJf "${image_file}.tar.xz" "${image_file}".*.img
 fi
 
 if [ -n "$sign" ]; then

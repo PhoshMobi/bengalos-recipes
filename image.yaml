@@ -15,6 +15,7 @@
 {{- $crypt_password := or .crypt_password $password -}}
 {{- $crypt_root := or .crypt_root "false" -}}
 {{- $bootonroot := or .bootonroot "false" }}
+{{- $compress := or .compress "false" }}
 
 architecture: {{ $architecture }}
 
@@ -109,3 +110,12 @@ actions:
       image: {{ $image }}
       bootstart: {{ $bootstart }}
       miniramfs: {{ $miniramfs }}
+
+{{ if eq $compress "true" }}
+  - action: run
+    description: "Fill unallocated blocks with zeroes"
+    action: run
+    chroot: false
+    script: scripts/zerofree.sh $IMAGE-part3
+{{ end }}
+
