@@ -55,7 +55,7 @@ actions:
     partitions:
 {{ if eq $has_esp_partition "true" }}
       - name: esp
-        fs: fat32
+        fs: vfat
         start: {{ $bootstart }}
         end: {{ $espend }}
         flags: [ esp, boot ]
