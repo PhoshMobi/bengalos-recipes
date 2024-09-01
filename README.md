@@ -5,6 +5,9 @@ debian-based image for devices running Phosh.
 
 The default user is `phosh` with password `1234`.
 
+For built images see [here](http://images.phosh.mobi/nightly/). These are meant
+for testing the phosh nightly packages.
+
 ## Build
 
 To build the image, you need to have `debos` and `bmaptool`. On a Debian-based
