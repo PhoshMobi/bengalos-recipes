@@ -1,0 +1,27 @@
+---
+
+stages:
+  - build
+
+default:
+  timeout: 6 hours
+  # Allow jobs to be caneled on new commits
+  interruptible: true
+  # Retry on infra hickups automatically
+  retry:
+    max: 1
+    when:
+      - 'api_failure'
+      - 'runner_system_failure'
+      - 'scheduler_failure'
+      - 'stuck_or_timeout_failure'
+
+build:nightly:amd64:
+  stage: build
+  tags: ["phosh-images"]
+  variables:
+    # Runner has few CPUs
+    DEBOS_CMD: "debos --cpus=1"
+  script:
+    - make
+
