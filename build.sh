@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 export PATH="/sbin:/usr/sbin:${PATH}"
 DEBOS_CMD=debos
 if [ -z "${ARGS+x}" ]; then
