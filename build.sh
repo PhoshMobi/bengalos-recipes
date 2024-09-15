@@ -1,9 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 
 set -e
 
 export PATH="/sbin:/usr/sbin:${PATH}"
-DEBOS_CMD=debos
+DEBOS_CMD=${DEBOS_CMD:-debos}
 if [ -z "${ARGS+x}" ]; then
     ARGS=""
 fi
