@@ -3,6 +3,10 @@
 stages:
   - build
 
+variables:
+  PHOSH_IMAGE_BRANCH: main
+  PHOSH_IMAGE_UPLOAD_OPTS: --verbose
+
 default:
   timeout: 6 hours
   # Allow jobs to be caneled on new commits
@@ -22,6 +26,17 @@ build:nightly:amd64:
   variables:
     # Runner has few CPUs
     DEBOS_CMD: "debos --cpus=1"
+    ARCH: amd64
   script:
-    - make
-
+    - "make ${ARCH}"
+    - |
+      if [ -n "${PHOSH_IMAGE_HOST}" ] && \
+         [ -n "${PHOSH_IMAGE_UPLOAD}" ] && \
+         [ "${CI_COMMIT_BRANCH}" = "${PHOSH_IMAGE_BRANCH}" ]; then
+        time rsync ${PHOSH_IMAGE_UPLOAD_OPTS} \
+                             phosh-os-${ARCH}-phosh-*.img.gz \
+                             phosh-os-${ARCH}-phosh-*.img.bmap \
+                             "${PHOSH_IMAGE_HOST}:"
+      else
+        echo "Skipping upload on ${CI_COMMIT_BRANCH}."
+      fi

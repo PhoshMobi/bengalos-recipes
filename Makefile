@@ -1,6 +1,8 @@
-all:
-	./build.sh -v -z -i -t amd64
+BUILD=./build.sh -v -z -i
+
+amd64:
+	$(BUILD) -t $@
 	ls -lh *.gz
 
 deps:
-	sudo apt install debos bmap-tools xz-utils zerofree
+	sudo apt install debos bmap-tools xz-utils zerofree virtinst
