@@ -26,6 +26,7 @@ remove `*.tar.gz`, `*.sqfs` and `*.img` before starting the build.
 If your system isn't debian-based (or if you choose to install `debos` without
 using `apt`, which is a terrible idea), please make sure you also install the
 following required packages:
+
 - `debootstrap`
 - `qemu-system-x86`
 - `qemu-user-static`
@@ -35,11 +36,17 @@ Then simply browse to the `phosh-os-recipes` folder and execute `./build.sh`.
 
 You can use `./build.sh -d` to use the docker version of `debos`.
 
-### Building QEMU image
+### QEMU image
+
+#### Building
 
 You can build a QEMU x86_64 image by adding the `-t amd64` flag to `build.sh`
 
-The resulting files are raw images. You can start qemu like so:
+The resulting files are raw images.
+
+#### Running
+
+You can start qemu like so:
 
 ```sh
 qemu-system-x86_64 -drive format=raw,file=<imagefile.img> -enable-kvm \
@@ -52,7 +59,7 @@ UEFI firmware files are available in Debian thanks to the
 Comprehensive explanation about firmware files can be found at
 [OVMF project's repository](https://github.com/tianocore/edk2/tree/master/OvmfPkg).
 
-If you prever libvirt related tooling use:
+If you prefer libvirt related tooling use:
 
 ```sh
 virt-install --connect qemu:///session --boot loader=/usr/share/OVMF/OVMF_CODE_4M.fd,loader.readonly=yes,loader.type=pflash,loader_secure=no --vcpus=4 --osinfo debiantesting -n phosh-os --video qxl  --transient --import --disk phosh-os-amd64-phosh-20240401.img
@@ -74,7 +81,7 @@ If you want to help with this project, please have a look at the
 In case you need more information, feel free to get in touch with the developers
 on [#phosh:librem.one](https://matrix.to/#/#phosh:librem.one).
 
-# License
+## License
 
 This software is licensed under the terms of the GNU General Public License,
-version 3 and based on mobian-recipes from https://salsa.debian.org/Mobian-team/mobian-recipes
+version 3 and based on mobian-recipes from <https://salsa.debian.org/Mobian-team/mobian-recipes>
