@@ -33,7 +33,7 @@ build:nightly:amd64:
          [ -n "${PHOSH_IMAGE_UPLOAD}" ] && \
          [ "${CI_COMMIT_BRANCH}" = "${PHOSH_IMAGE_BRANCH}" ]; then
         time rsync ${PHOSH_IMAGE_UPLOAD_OPTS} \
-                             phosh-os-${ARCH}-phosh-*.img.gz \
+                             phosh-os-${ARCH}-phosh-*.img.xz \
                              phosh-os-${ARCH}-phosh-*.img.bmap \
                              "${PHOSH_IMAGE_HOST}:"
       else

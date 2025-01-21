@@ -138,13 +138,13 @@ fi
 if [ "$do_compress" ]; then
   echo "Compressing ${image_file}..."
   fallocate -v --dig-holes ${image_file}.img
-  [ -f "${image_file}.img" ] && gzip --keep --force "${image_file}.img"
+  [ -f "${image_file}.img" ] && xz --keep --force "${image_file}.img"
 fi
 
 if [ -n "$sign" ]; then
     truncate -s0 "${image_file}.sha256sums"
     if [ "$do_compress" ]; then
-        extensions="img.gz tar.xz img.bmap"
+        extensions="img.xz tar.gz img.bmap"
     else
         extensions="*.img"
     fi
