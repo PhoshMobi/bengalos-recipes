@@ -81,6 +81,14 @@ If you want to help with this project, please have a look at the
 In case you need more information, feel free to get in touch with the developers
 on [#phosh:librem.one](https://matrix.to/#/#phosh:librem.one).
 
+### Testing the upload
+
+To test if the upload job would pick things up one can use:
+
+```sh`
+ git push -o ci.variable=PHOSH_IMAGE_UPLOAD=1 -o ci.variable="PHOSH_IMAGE_HOST=doesnotexist"
+```
+
 ## License
 
 This software is licensed under the terms of the GNU General Public License,
