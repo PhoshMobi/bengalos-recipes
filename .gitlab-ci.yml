@@ -24,8 +24,7 @@ build:nightly:amd64:
   stage: build
   tags: ["phosh-images"]
   variables:
-    # Runner has few CPUs
-    DEBOS_CMD: "debos --cpus=1"
+    DEBOS_CMD: "debos"
     ARCH: amd64
   script:
     - "make ${ARCH}"
