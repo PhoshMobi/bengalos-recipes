@@ -40,3 +40,23 @@ build:nightly:amd64:
       else
         echo "Skipping upload on ${CI_COMMIT_BRANCH}."
       fi
+
+build:mkosi:nightly:amd64:
+  allow-failure: true
+  stage: build
+  tags: ["phosh-images"]
+  script:
+    - sudo apt install mkosi --no-install-recommends
+    - python3 configure.py --device amd64
+    - mkosi -C build -i
+    - tar -czvf phosh-os-mkosi-amd64.img.gz build/image.raw
+    - |
+      if [ -n "${PHOSH_IMAGE_HOST}" ] && \
+         [ -n "${PHOSH_IMAGE_UPLOAD}" ] && \
+         [ "${CI_COMMIT_BRANCH}" = "${PHOSH_IMAGE_BRANCH}" ]; then
+        time rsync ${PHOSH_IMAGE_UPLOAD_OPTS} \
+                             phosh-os-mkosi-amd64.img.gz \
+                             "${PHOSH_IMAGE_HOST}:"
+      else
+        echo "Skipping upload on ${CI_COMMIT_BRANCH}."
+      fi
