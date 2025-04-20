@@ -62,7 +62,7 @@ Comprehensive explanation about firmware files can be found at
 If you prefer libvirt related tooling use:
 
 ```sh
-virt-install --connect qemu:///session --boot loader=/usr/share/OVMF/OVMF_CODE_4M.fd,loader.readonly=yes,loader.type=pflash,loader_secure=no --vcpus=4 -memory=4096 --osinfo debiantesting -n phosh-os --video qxl  --transient --import --disk phosh-os-amd64-phosh-20250329.img
+virt-install --connect qemu:///session --boot loader=/usr/share/OVMF/OVMF_CODE_4M.fd,loader.readonly=yes,loader.type=pflash,loader_secure=no --vcpus=4 --memory=4096 --osinfo debiantesting -n phosh-os --video qxl  --transient --import --disk phosh-os-amd64-phosh-20250329.img
 ```
 
 You may also want to convert the raw image to qcow2 format
