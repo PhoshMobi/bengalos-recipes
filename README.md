@@ -85,7 +85,7 @@ on [#phosh:librem.one](https://matrix.to/#/#phosh:librem.one).
 
 To test if the upload job would pick things up one can use:
 
-```sh`
+```sh
  git push -o ci.variable=PHOSH_IMAGE_UPLOAD=1 -o ci.variable="PHOSH_IMAGE_HOST=doesnotexist"
 ```
 
