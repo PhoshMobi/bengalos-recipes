@@ -1,0 +1,8 @@
+#!/bin/bash
+
+useradd \
+    --create-home \
+    --user-group "{USERNAME}" \
+    --password "$(openssl passwd -6 '{PASSWORD}')" \
+    --groups sudo,bluetooth,plugdev,feedbackd \
+    --shell /bin/bash

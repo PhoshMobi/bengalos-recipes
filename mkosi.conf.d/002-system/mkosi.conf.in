@@ -1,0 +1,34 @@
+[Content]
+Hostname={HOSTNAME}
+Packages=
+   alsa-ucm-conf
+   alsa-utils
+   apt-utils
+   bluetooth
+   busybox
+   ca-certificates
+   callaudiod
+   dosfstools
+   e2fsprogs
+   file
+   hwdata
+   inetutils-ping
+   iptables
+   iw
+   kbd
+   libspa-0.2-bluetooth
+   locales
+   mmc-utils
+   network-manager
+   openssl
+   passwd
+   pipewire-audio
+   rfkill
+   rtkit
+   systemd-resolved
+   usb-modeswitch
+   usbutils
+   wireless-regdb
+   wireless-tools
+   wireplumber
+   wpasupplicant

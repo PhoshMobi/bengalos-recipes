@@ -8,6 +8,35 @@ The default user is `phosh` with password `1234`.
 For built images see [here](http://images.phosh.mobi/nightly/). These are meant
 for testing the phosh nightly packages.
 
+## Build using `mkosi`
+
+An image can also be built using [systemd's mkosi](https://mkosi.systemd.io/).
+You can install the required packages in a Debian OS as:
+
+``` sh
+sudo apt install mkosi --no-install-recommends
+```
+
+We suggest not to install recommends as our image is based on Debian and so all
+required packages are already present in host OS.
+
+Then setup and build using:
+
+``` sh
+python3 configure.py build --password hunter2
+mkosi -C build -i
+```
+
+You can customize the image through configuration. Check `python3 configure.py
+--help` for more information.
+
+The built image is stored in `build/image.raw`. To run Phosh in a VM, you can
+use the following command:
+
+``` sh
+mkosi -C build vm
+```
+
 ## Build
 
 To build the image, you need to have `debos` and `bmaptool`. On a Debian-based

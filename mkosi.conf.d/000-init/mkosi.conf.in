@@ -1,0 +1,25 @@
+[Distribution]
+Distribution=debian
+Architecture={ARCHITECTURE}
+Release={RELEASE}
+Repositories={REPOSITORIES}
+
+[Output]
+Format=disk
+
+[Content]
+Bootable=true
+Packages=
+      apt
+      login
+      sudo
+      systemd
+      systemd-boot
+
+[Runtime]
+Console=gui
+RAM=6G # https://github.com/systemd/systemd/issues/35026
+CPUs=4
+TPM=yes
+Firmware=uefi
+RuntimeSize=20G

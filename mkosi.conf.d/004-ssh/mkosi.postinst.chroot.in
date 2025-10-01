@@ -1,0 +1,4 @@
+#!/bin/bash
+
+echo "TODO: Create /home/{USERNAME}/.ssh and chown it to user"
+# chown -R "{USERNAME}:{USERNAME}" "/home/{USERNAME}/.ssh"
