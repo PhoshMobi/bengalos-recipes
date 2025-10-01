@@ -1,7 +1,5 @@
 #!/bin/bash
 
-echo "{HOSTNAME}" > /etc/hostname
-
 # systemd-firstboot requires user input, which isn't possible on mobile devices
 systemctl disable systemd-firstboot.service
 systemctl mask systemd-firstboot.service
