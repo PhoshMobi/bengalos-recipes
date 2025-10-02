@@ -108,7 +108,7 @@ If you want to help with this project, please have a look at the
 [FAQ](https://phosh.mobi/faq/#whats-a-good-way-to-contribute).
 
 In case you need more information, feel free to get in touch with the developers
-on [#phosh:librem.one](https://matrix.to/#/#phosh:librem.one).
+on [#phosh:phosh.mobi](https://matrix.to/#/#phosh:phosh.mobi).
 
 ### Testing the upload
 
