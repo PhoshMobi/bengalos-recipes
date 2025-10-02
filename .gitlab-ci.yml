@@ -41,7 +41,7 @@ build:nightly:amd64:
       fi
 
 build:mkosi:nightly:amd64:
-  allow-failure: true
+  allow_failure: true
   stage: build
   tags: ["phosh-images"]
   script:
