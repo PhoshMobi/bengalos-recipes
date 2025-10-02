@@ -44,10 +44,11 @@ build:mkosi:nightly:amd64:
   allow_failure: true
   stage: build
   tags: ["phosh-images"]
+  variables:
   script:
     - rm -rf build/
     - python3 configure.py build --password 1234
-    - mkosi -C build -i
+    - XDG_CACHE_HOME=~/.cache mkosi -C build -i
     - tar -czvf phosh-os-mkosi-amd64.img.gz build/image.raw
     - |
       if [ -n "${PHOSH_IMAGE_HOST}" ] && \
