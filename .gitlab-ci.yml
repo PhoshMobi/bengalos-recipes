@@ -45,6 +45,7 @@ build:mkosi:nightly:amd64:
   stage: build
   tags: ["phosh-images"]
   script:
+    - rm -rf build/
     - python3 configure.py build --password 1234
     - mkosi -C build -i
     - tar -czvf phosh-os-mkosi-amd64.img.gz build/image.raw
