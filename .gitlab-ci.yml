@@ -20,7 +20,7 @@ default:
       - 'scheduler_failure'
       - 'stuck_or_timeout_failure'
 
-build:nightly:amd64:
+build:debos:nightly:amd64:
   stage: build
   tags: ["phosh-images"]
   variables:
@@ -44,10 +44,11 @@ build:mkosi:nightly:amd64:
   allow_failure: true
   stage: build
   tags: ["phosh-images"]
+  variables:
   script:
-    - sudo apt install mkosi --no-install-recommends
-    - python3 configure.py --device amd64
-    - mkosi -C build -i
+    - rm -rf build/
+    - python3 configure.py build --password 1234
+    - XDG_CACHE_HOME=~/.cache mkosi -C build -i
     - tar -czvf phosh-os-mkosi-amd64.img.gz build/image.raw
     - |
       if [ -n "${PHOSH_IMAGE_HOST}" ] && \
