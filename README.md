@@ -23,7 +23,7 @@ required packages are already present in host OS.
 Then setup and build using:
 
 ``` sh
-python3 configure.py build --password hunter2
+python3 configure.py build --password 1234
 mkosi -C build -i
 ```
 
