@@ -6,3 +6,6 @@ amd64:
 
 deps:
 	sudo apt install debos bmap-tools xz-utils zerofree virtinst
+
+lint:
+	mdl -s .mdl.rb -g *.md
