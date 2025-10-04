@@ -74,9 +74,9 @@ You can build a QEMU x86_64 image by adding the `-t amd64` flag to `build.sh`
 
 The resulting files are raw images.
 
-#### Running
+## Running
 
-You can start qemu like so:
+You can start either image with the following command:
 
 ```sh
 qemu-system-x86_64 -drive format=raw,file=<imagefile.img> -enable-kvm \
