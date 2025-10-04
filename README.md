@@ -10,8 +10,9 @@ for testing the phosh nightly packages.
 
 ## Build using `mkosi`
 
-An image can also be built using [systemd's mkosi](https://mkosi.systemd.io/).
-You can install the required packages in a Debian OS as:
+An image can be built using [systemd's mkosi](https://mkosi.systemd.io/). These
+images are currently experimental. For debos based builds, see below. You can
+install the required packages in a Debian OS as:
 
 ``` sh
 sudo apt install mkosi --no-install-recommends
@@ -37,7 +38,7 @@ use the following command:
 mkosi -C build vm
 ```
 
-## Build
+## Build using debos
 
 To build the image, you need to have `debos` and `bmaptool`. On a Debian-based
 system, install these dependencies by typing the following command in a terminal:
