@@ -1,4 +1,4 @@
-# phosh-os-recipes
+# BengalOS
 
 A set of [debos](https://github.com/go-debos/debos) recipes for building a
 debian-based image for devices running Phosh.
@@ -10,8 +10,9 @@ for testing the phosh nightly packages.
 
 ## Build using `mkosi`
 
-An image can also be built using [systemd's mkosi](https://mkosi.systemd.io/).
-You can install the required packages in a Debian OS as:
+An image can be built using [systemd's mkosi](https://mkosi.systemd.io/). These
+images are currently experimental. For debos based builds, see below. You can
+install the required packages in a Debian OS as:
 
 ``` sh
 sudo apt install mkosi --no-install-recommends
@@ -23,7 +24,7 @@ required packages are already present in host OS.
 Then setup and build using:
 
 ``` sh
-python3 configure.py build --password hunter2
+./configure.py build --password 1234
 mkosi -C build -i
 ```
 
@@ -37,12 +38,12 @@ use the following command:
 mkosi -C build vm
 ```
 
-## Build
+## Build using debos
 
 To build the image, you need to have `debos` and `bmaptool`. On a Debian-based
 system, install these dependencies by typing the following command in a terminal:
 
-```
+``` sh
 sudo apt install debos bmap-tools xz-utils zerofree
 ```
 
@@ -61,21 +62,11 @@ following required packages:
 - `qemu-user-static`
 - `binfmt-support`
 
-Then simply browse to the `phosh-os-recipes` folder and execute `./build.sh`.
+Then simply browse to the `phosh-recipes` folder and execute `make amd64`.
 
-You can use `./build.sh -d` to use the docker version of `debos`.
+## Running
 
-### QEMU image
-
-#### Building
-
-You can build a QEMU x86_64 image by adding the `-t amd64` flag to `build.sh`
-
-The resulting files are raw images.
-
-#### Running
-
-You can start qemu like so:
+You can start either image with the following command:
 
 ```sh
 qemu-system-x86_64 -drive format=raw,file=<imagefile.img> -enable-kvm \
@@ -91,13 +82,13 @@ Comprehensive explanation about firmware files can be found at
 If you prefer libvirt related tooling use:
 
 ```sh
-virt-install --connect qemu:///session --boot loader=/usr/share/OVMF/OVMF_CODE_4M.fd,loader.readonly=yes,loader.type=pflash,loader_secure=no --vcpus=4 --memory=4096 --osinfo debiantesting -n phosh-os --video qxl  --transient --import --disk phosh-os-amd64-phosh-20250329.img --serial pty
+virt-install --connect qemu:///session --boot loader=/usr/share/OVMF/OVMF_CODE_4M.fd,loader.readonly=yes,loader.type=pflash,loader_secure=no --vcpus=4 --memory=4096 --osinfo debiantesting -n bengal-os --video qxl --transient --import --disk <imagefile.img> --serial pty
 ```
 
 You may also want to convert the raw image to qcow2 format
 and resize it like this:
 
-```
+```sh
 qemu-img convert -f raw -O qcow2 <raw_image.img> <qcow_image.qcow2>
 qemu-img resize -f qcow2 <qcow_image.qcow2> +20G
 ```
@@ -108,7 +99,7 @@ If you want to help with this project, please have a look at the
 [FAQ](https://phosh.mobi/faq/#whats-a-good-way-to-contribute).
 
 In case you need more information, feel free to get in touch with the developers
-on [#phosh:librem.one](https://matrix.to/#/#phosh:librem.one).
+on [#phosh:phosh.mobi](https://matrix.to/#/#phosh:phosh.mobi).
 
 ### Testing the upload
 

@@ -2,6 +2,16 @@
 
 stages:
   - build
+  - test
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+    # Don't trigger a branch pipeline if there is an open MR
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH
 
 variables:
   PHOSH_IMAGE_BRANCH: main
@@ -49,14 +59,26 @@ build:mkosi:nightly:amd64:
     - rm -rf build/
     - python3 configure.py build --password 1234
     - XDG_CACHE_HOME=~/.cache mkosi -C build -i
-    - tar -czvf phosh-os-mkosi-amd64.img.gz build/image.raw
+    - tar -czvf BengalOS-amd64.img.gz build/image.raw
     - |
       if [ -n "${PHOSH_IMAGE_HOST}" ] && \
          [ -n "${PHOSH_IMAGE_UPLOAD}" ] && \
          [ "${CI_COMMIT_BRANCH}" = "${PHOSH_IMAGE_BRANCH}" ]; then
         time rsync ${PHOSH_IMAGE_UPLOAD_OPTS} \
-                             phosh-os-mkosi-amd64.img.gz \
+                             BengalOS-amd64.img.gz \
                              "${PHOSH_IMAGE_HOST}:"
       else
         echo "Skipping upload on ${CI_COMMIT_BRANCH}."
       fi
+
+lint:
+  stage: test
+  needs: []
+  image: 'godiug/website:v0.0.2025-09-14'
+  script:
+    - make lint
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        paths:
+          - "*.md"

@@ -8,7 +8,7 @@ actions:
     recommends: true
     description: Install Phosh packages
     packages:
-      - phosh-osk-stub
+      - phosh-osk-stevia
       - phosh-pim
       - phosh-full
 
