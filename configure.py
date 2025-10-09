@@ -44,7 +44,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--clean", action="store_true")
 
     parser.add_argument("--architecture", choices=["x86-64"], default="x86-64")
-    parser.add_argument("--release", choices=["trixie"], default="trixie")
+    parser.add_argument("--release", choices=["forky"], default="forky")
     parser.add_argument("--contrib", action="store_true")
     parser.add_argument("--non_free", action="store_true")
 
