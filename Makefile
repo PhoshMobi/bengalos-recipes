@@ -9,3 +9,10 @@ deps:
 
 lint:
 	mdl -s .mdl.rb -g *.md
+
+clean:
+	rm -rf build/
+
+bengalos-amd64:
+	./configure.py build/
+	mkosi -C build -i
