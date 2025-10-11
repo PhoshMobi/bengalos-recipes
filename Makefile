@@ -7,7 +7,12 @@ amd64:
 deps:
 	sudo apt install debos bmap-tools xz-utils zerofree virtinst
 
-lint:
+pylint:
+	mypy *.py
+	black --check *.py
+	flake8 *.py
+
+lint: pylint
 	mdl -s .mdl.rb -g *.md
 
 clean:
