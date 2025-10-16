@@ -30,28 +30,7 @@ default:
       - 'scheduler_failure'
       - 'stuck_or_timeout_failure'
 
-build:debos:nightly:amd64:
-  stage: build
-  tags: ["phosh-images"]
-  variables:
-    DEBOS_CMD: "debos"
-    ARCH: amd64
-  script:
-    - "make ${ARCH}"
-    - |
-      if [ -n "${PHOSH_IMAGE_HOST}" ] && \
-         [ -n "${PHOSH_IMAGE_UPLOAD}" ] && \
-         [ "${CI_COMMIT_BRANCH}" = "${PHOSH_IMAGE_BRANCH}" ]; then
-        time rsync ${PHOSH_IMAGE_UPLOAD_OPTS} \
-                             phosh-os-${ARCH}-phosh-*.img.xz \
-                             phosh-os-${ARCH}-phosh-*.img.bmap \
-                             "${PHOSH_IMAGE_HOST}:"
-      else
-        echo "Skipping upload on ${CI_COMMIT_BRANCH}."
-      fi
-
 build:mkosi:nightly:amd64:
-  allow_failure: true
   stage: build
   tags: ["phosh-images"]
   variables:
