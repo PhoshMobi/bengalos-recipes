@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import datetime
 import pathlib
 import shutil
 import sys
@@ -23,6 +24,16 @@ def configure_file(path: pathlib.Path, options: dict[str, str]) -> pathlib.Path:
 def configure_dir(dir_path: pathlib.Path, options: dict[str, str]):
     for path in dir_path.rglob("**/*.in"):
         configure_file(path, options)
+
+
+def configure_version(dir_path: pathlib.Path, version: str):
+    if not version:
+        date = datetime.datetime.today().strftime("%Y%m%d")
+        version = f"0.0.{date}.0"
+    filename = dir_path / "mkosi.version"
+    print(f"Setting {filename} to {version}")
+    with open(filename, "w+") as f:
+        f.write(version)
 
 
 def copy_dir(src: pathlib.Path, dst: pathlib.Path) -> pathlib.Path:
@@ -57,6 +68,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--ssh", action="store_true")
     parser.add_argument("--zram", action="store_true")
 
+    parser.add_argument("--version", default="")
+
     args = parser.parse_args()
 
     return args
@@ -83,6 +96,8 @@ def main():
     dst = args.build_directory / "mkosi.conf.d"
 
     dst.mkdir()
+
+    configure_version(args.build_directory, args.version)
 
     path = copy_dir(src / "000-init", dst)
     configure_dir(path, options)

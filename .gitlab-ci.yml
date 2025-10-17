@@ -34,17 +34,17 @@ build:mkosi:nightly:amd64:
   stage: build
   tags: ["phosh-images"]
   variables:
+    ARCH: amd64
   script:
-    - rm -rf build/
-    - python3 configure.py build --password 1234
-    - XDG_CACHE_HOME=~/.cache mkosi -C build -i
-    - tar -czvf BengalOS-amd64.img.gz build/image.raw
+    - XDG_CACHE_HOME=~/.cache make clean bengalos-${ARCH}
     - |
       if [ -n "${PHOSH_IMAGE_HOST}" ] && \
          [ -n "${PHOSH_IMAGE_UPLOAD}" ] && \
          [ "${CI_COMMIT_BRANCH}" = "${PHOSH_IMAGE_BRANCH}" ]; then
+        ls -lh build/BengalOS-*
+        xz -zk build/BengalOS-${ARCH}_*.raw
         time rsync ${PHOSH_IMAGE_UPLOAD_OPTS} \
-                             BengalOS-amd64.img.gz \
+                             BengalOS-${ARCH}_*.raw.xz \
                              "${PHOSH_IMAGE_HOST}:"
       else
         echo "Skipping upload on ${CI_COMMIT_BRANCH}."

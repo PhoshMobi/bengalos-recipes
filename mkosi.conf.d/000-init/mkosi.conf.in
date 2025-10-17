@@ -5,6 +5,7 @@ Release={RELEASE}
 Repositories={REPOSITORIES}
 
 [Output]
+ImageId=BengalOS
 Format=disk
 
 [Content]
