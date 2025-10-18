@@ -45,7 +45,7 @@ build:mkosi:nightly:amd64:
         ls -lh build/BengalOS-*
         xz -zk build/BengalOS-${ARCH}_*.raw
         time rsync ${PHOSH_IMAGE_UPLOAD_OPTS} \
-                             BengalOS-${ARCH}_*.raw.xz \
+                             build/BengalOS-${ARCH}_*.raw.xz \
                              "${PHOSH_IMAGE_HOST}:"
       else
         echo "Skipping upload on ${CI_COMMIT_BRANCH}."
