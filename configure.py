@@ -90,6 +90,13 @@ def main():
     if args.build_directory.exists():
         if args.clean:
             shutil.rmtree(args.build_directory)
+        else:
+            print(
+                f"Build directory `{args.build_directory}` already exists, "
+                "either delete it and configure again or pass `--clean`.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
     args.build_directory.mkdir()
 
     src = pathlib.Path("./mkosi.conf.d/")
