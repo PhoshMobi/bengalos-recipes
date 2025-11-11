@@ -1,6 +1,6 @@
 Types: deb
 URIs: http://deb.phosh.mobi/nightly/
-Suites: {RELEASE}-nightly
+Suites: forky-nightly
 Components: main
 Signed-By:
   -----BEGIN PGP PUBLIC KEY BLOCK-----
