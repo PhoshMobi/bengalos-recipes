@@ -1,6 +1,8 @@
 bengalos-amd64:
 	./configure.py build/
-	mkosi -C build -i
+	mkosi -C build -i \
+		--hostname phosh \
+		--profile device-amd64,ssh,zram
 
 deps:
 	sudo apt install mkosi virtinst
