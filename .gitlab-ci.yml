@@ -36,16 +36,17 @@ build:mkosi:nightly:amd64:
   tags: ["phosh-images"]
   variables:
     ARCH: amd64
+    VARIANT: development
   script:
-    - XDG_CACHE_HOME=~/.cache make clean bengalos-${ARCH}
+    - XDG_CACHE_HOME=~/.cache make clean bengalos-${ARCH}-${VARIANT}
     - |
       if [ -n "${PHOSH_IMAGE_HOST}" ] && \
          [ -n "${PHOSH_IMAGE_UPLOAD}" ] && \
          [ "${CI_COMMIT_BRANCH}" = "${PHOSH_IMAGE_BRANCH}" ]; then
-        ls -lh build/BengalOS-*
-        xz -zk build/BengalOS-${ARCH}_*.raw
+        ls -lh build-${ARCH}-${VARIANT}/BengalOS-*
+        xz -zk build-${ARCH}-${VARIANT}/BengalOS-${ARCH}_*.raw
         time rsync ${PHOSH_IMAGE_UPLOAD_OPTS} \
-                             build/BengalOS-${ARCH}_*.raw.xz \
+                             build-${ARCH}-${VARIANT}/BengalOS-${ARCH}_*.raw.xz \
                              "${PHOSH_IMAGE_HOST}:"
       else
         echo "Skipping upload on ${CI_COMMIT_BRANCH}."
