@@ -2,8 +2,6 @@
 
 set -e
 
-plymouth-set-default-theme phosh
-
 # Mask service to not have two services wanting
 # the same bus name
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1117732

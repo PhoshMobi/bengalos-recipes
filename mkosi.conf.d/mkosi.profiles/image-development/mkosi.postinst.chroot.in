@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 useradd \
     --create-home \
     --user-group "{USERNAME}" \
