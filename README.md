@@ -20,11 +20,8 @@ sudo apt install mkosi
 Then setup and build using:
 
 ``` sh
-./configure.py build --password 1234
-mkosi -C build -i
+make bengalos-amd64-development
 ```
-
-You can customize the image. Check `./configure.py --help` for more information.
 
 ## Running
 
@@ -32,7 +29,7 @@ The built image is stored in `BengalOS-amd64_<version>.raw`. To run the image in
 the following command:
 
 ``` sh
-mkosi -C build vm
+bengalos-amd64-development-run
 ```
 
 If you prefer libvirt related tooling use:
@@ -51,8 +48,8 @@ qemu-img resize -f qcow2 <qcow_image.qcow2> +20G
 
 ## Contributing
 
-If you want to help with this project, please have a look at the
-[FAQ](https://phosh.mobi/faq/#whats-a-good-way-to-contribute).
+If you want to help with this project, please have a look at the [Contributors
+manual](https://dev.phosh.mobi/docs/).
 
 In case you need more information, feel free to get in touch with the developers on
 [#phosh:phosh.mobi](https://matrix.to/#/#phosh:phosh.mobi).
