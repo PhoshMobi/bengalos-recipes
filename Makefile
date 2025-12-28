@@ -1,3 +1,7 @@
+ARCH=amd64
+VARIANT=development
+IMAGE_UPLOAD_OPTS=--verbose
+
 bengalos-amd64-development: build-amd64-development/.done
 
 build-amd64-development/.done:
@@ -45,3 +49,10 @@ clean:
 	rm -rf build-amd64-development/
 	rm -rf build-amd64-immutable/
 
+upload:
+	xz -zk build-${ARCH}-${VARIANT}/BengalOS-${ARCH}_0.0.20??????.?.raw
+	rsync ${IMAGE_UPLOAD_OPTS} \
+		build-${ARCH}-${VARIANT}/BengalOS-${ARCH}_0.0.20??????.?.raw.xz \
+		"${IMAGE_HOST}:"
+
+.PHONY: upload pylint deps clean
