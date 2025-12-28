@@ -44,10 +44,7 @@ build:mkosi:nightly:amd64:
          [ -n "${PHOSH_IMAGE_UPLOAD}" ] && \
          [ "${CI_COMMIT_BRANCH}" = "${PHOSH_IMAGE_BRANCH}" ]; then
         ls -lh build-${ARCH}-${VARIANT}/BengalOS-*
-        xz -zk build-${ARCH}-${VARIANT}/BengalOS-${ARCH}_*.raw
-        time rsync ${PHOSH_IMAGE_UPLOAD_OPTS} \
-                             build-${ARCH}-${VARIANT}/BengalOS-${ARCH}_*.raw.xz \
-                             "${PHOSH_IMAGE_HOST}:"
+        time make ARCH=arch VARIANT=development IMAGE_HOST="${PHOSH_IMAGE_UPLOAD_HOST}" upload
       else
         echo "Skipping upload on ${CI_COMMIT_BRANCH}."
       fi
