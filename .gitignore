@@ -5,4 +5,6 @@
 *.sqfs
 *.tar.gz
 build/
+build-amd64-development/
+build-amd64-immutable/
 overlays/ssh/authorized_keys
