@@ -2,6 +2,10 @@ ARCH=amd64
 VARIANT=development
 IMAGE_UPLOAD_OPTS=--verbose
 
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1133276
+# workaround for broken mkosi/26-2 in sid and forky
+export PATH := $(addsuffix :/usr/sbin,$(PATH))
+
 bengalos-amd64-development: build-amd64-development/.done
 
 build-amd64-development/.done:
