@@ -1,0 +1,7 @@
+#!/bin/sh
+
+set -e
+
+# …otherwise setting locales always fails
+# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1133781
+rm -f /usr/share/dbus-1/system.d/org.freedesktop.locale1.read-only.conf
