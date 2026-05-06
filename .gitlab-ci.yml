@@ -1,7 +1,8 @@
 ---
 
 stages:
-  - build
+  - build:dev
+  - build:immutable
   - test
 
 workflow:
@@ -31,8 +32,8 @@ default:
       - 'scheduler_failure'
       - 'stuck_or_timeout_failure'
 
-build:mkosi:nightly:amd64:
-  stage: build
+build:dev:nightly:amd64:
+  stage: build:dev
   tags: ["phosh-images"]
   variables:
     ARCH: amd64
@@ -48,6 +49,16 @@ build:mkosi:nightly:amd64:
       else
         echo "Skipping upload on ${CI_COMMIT_BRANCH}."
       fi
+
+build:immutable:nightly:amd64:
+  stage: build:immutable
+  tags: ["phosh-images"]
+  needs: ['build:dev:nightly:amd64']
+  variables:
+    ARCH: amd64
+    VARIANT: immutable
+  script:
+    - XDG_CACHE_HOME=~/.cache make clean bengalos-${ARCH}-${VARIANT}
 
 lint:
   stage: test
