@@ -1,0 +1,19 @@
+[Transfer]
+ProtectVersion=%A
+# TODO: Add keyring
+Verify=false
+
+[Source]
+Type=url-file
+# sysupdate doesn't allow for per version folders :(
+# https://github.com/systemd/systemd/issues/41977
+Path=https://bengalos.phosh.mobi/images/%W/base/dump/
+MatchPattern=%M_@v.usr-verity.raw.xz
+
+[Target]
+Type=partition
+Path=auto
+MatchPattern=%M-@v-v
+MatchPartitionType=usr-verity
+PartitionFlags=0
+ReadOnly=1
