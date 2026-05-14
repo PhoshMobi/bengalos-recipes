@@ -10,7 +10,7 @@ bengalos-amd64-development: build-amd64-development/.done
 
 build-amd64-development/.done:
 	./configure.py build-amd64-development/
-	mkosi -C build-amd64-development -i \
+	mkosi -C build-amd64-development -B -i \
 	  --hostname phosh \
 		--profile image-development,device-amd64,zram,phosh
 	touch build-amd64-development/.done
@@ -29,7 +29,7 @@ build-amd64-immutable/.prep:
 	touch build-amd64-immutable/.prep
 
 build-amd64-immutable/.done: build-amd64-immutable/.prep
-	mkosi -C build-amd64-immutable -i \
+	mkosi -C build-amd64-immutable -B -i \
 		--hostname phosh \
 		--profile image-immutable,device-amd64,zram,phosh
 	touch build-amd64-immutable/.done
