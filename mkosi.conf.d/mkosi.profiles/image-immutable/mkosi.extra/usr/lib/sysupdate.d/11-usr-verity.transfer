@@ -7,7 +7,7 @@ Verify=false
 Type=url-file
 # sysupdate doesn't allow for per version folders :(
 # https://github.com/systemd/systemd/issues/41977
-Path=https://bengalos.phosh.mobi/images/%W/base/dump/
+Path=https://bengalos.phosh.mobi/images/%a/%W/roaming/
 MatchPattern=%M_@v.usr-verity.raw.xz
 
 [Target]
