@@ -23,9 +23,12 @@ bengalos-amd64-development-run: build-amd64-development/.done
 
 bengalos-amd64-immutable: build-amd64-immutable/.done
 
-build-amd64-immutable/.done:
+build-amd64-immutable/.prep:
 	./configure.py build-amd64-immutable/
 	mkosi -C build-amd64-immutable genkey
+	touch build-amd64-immutable/.prep
+
+build-amd64-immutable/.done: build-amd64-immutable/.prep
 	mkosi -C build-amd64-immutable -i \
 		--hostname phosh \
 		--profile image-immutable,device-amd64,zram,phosh
