@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# We run this early so profiles can ammend it
+
+set -e
+
+cat <<EOF >/usr/lib/os-release
+PRETTY_NAME="Phosh BengalOS roaming"
+NAME="Phosh BengalOS"
+VERSION_CODENAME="roaming"
+ID=bengalos
+ID_LIKE=debian
+HOME_URL="https://phosh.mobi/"
+SUPPORT_URL="https://matrix.to/#/#phosh:phosh.mobi"
+BUG_REPORT_URL="https://salsa.debian.org/BengalOS-team/bengalos-recipes"
+VERSION_ID=$IMAGE_VERSION
+RELEASE_TYPE=development
+EOF
