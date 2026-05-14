@@ -8,6 +8,10 @@ to make changes to configurations or packages easily and the immutable ones
 supporting atomic updates and rollbacks giving a more phone-like update
 behavior. Both images start a first-boot wizard to create the initial user.
 
+> [!important]
+> All images contain a `root` user with a default password. Make sure to change that
+> when you're doing more than a quick test.
+
 ## Immutable Images
 
 The immutable images are what one expects from a phone-like operating system. The
@@ -48,14 +52,7 @@ truncate -s 20G <imagefile.img>
 virt-install --connect qemu:///session --boot loader=/usr/share/OVMF/OVMF_CODE_4M.fd,loader.readonly=yes,loader.type=pflash,loader_secure=no --vcpus=4 --memory=4096 --osinfo debiantesting -n bengalos --video qxl --transient --import --disk <imagefile.img> --serial pty
 ```
 
-“To access the serial console in that image you can use
-
-```sh
-virsh console bengalos
-```
-
-The user is `root` with password `root`. You can update the image at any time by
-running
+You can update the image at any time by running
 
 ```sh
 /usr/lib/systemd-sysupdate update
@@ -106,6 +103,17 @@ virsh console bengalos-dev
 
 The user is `phosh` with password `1234`. You can update this image using
 Debian's tooling like `apt`.
+
+## Troubleshooting
+
+For troubleshooting you can access the virtual machines serial console. If you're using virt-install
+as described above you can access the console with
+
+```sh
+virsh console bengalos
+```
+
+The user is `root` with password `root`.
 
 ## Contributing
 
