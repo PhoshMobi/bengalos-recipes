@@ -117,13 +117,7 @@ In case you need more information, feel free to get in touch with the developers
 
 The issue tracker is at <https://salsa.debian.org/BengalOS-team/bengalos-recipes/issues/>
 
-### Testing the CI Upload
-
-To test if the upload part of the CI job would pick things up correctly one can use:
-
-```sh
- git push -o ci.variable=PHOSH_IMAGE_UPLOAD=1 -o ci.variable="PHOSH_IMAGE_HOST=doesnotexist"
-```
+For more documentations see [docs/][./docs].
 
 ## License
 
