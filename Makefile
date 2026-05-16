@@ -50,7 +50,7 @@ pylint:
 	flake8 *.py
 
 lint: pylint
-	mdl -s .mdl.rb -g *.md
+	mdl -s .mdl.rb -g *.md docs/*.md
 
 clean:
 	rm -rf build-amd64-development/
