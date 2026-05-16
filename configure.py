@@ -46,9 +46,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("build_directory", type=pathlib.Path, default="build")
     parser.add_argument("--clean", action="store_true")
 
-    parser.add_argument("--username", default="phosh")
-    parser.add_argument("--password", default="1234")
-
     parser.add_argument("--version", default="")
 
     args = parser.parse_args()
