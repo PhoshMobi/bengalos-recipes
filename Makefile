@@ -57,9 +57,9 @@ clean:
 	rm -rf build-amd64-immutable/
 
 upload:
-	xz -zk build-${ARCH}-${VARIANT}/BengalOS-${ARCH}_0.0.20??????.?.raw
+	xz -zk build-${ARCH}-${VARIANT}/BengalOS_0.0.20??????.?.raw
 	rsync ${IMAGE_UPLOAD_OPTS} \
-		build-${ARCH}-${VARIANT}/BengalOS-${ARCH}_0.0.20??????.?.raw.xz \
+		build-${ARCH}-${VARIANT}/BengalOS_0.0.20??????.?.raw.xz \
 		"${IMAGE_HOST}:"
 
 .PHONY: upload pylint deps clean

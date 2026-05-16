@@ -44,7 +44,7 @@ build:dev:nightly:amd64:
       if [ -n "${PHOSH_IMAGE_HOST}" ] && \
          [ -n "${PHOSH_IMAGE_UPLOAD}" ] && \
          [ "${CI_COMMIT_BRANCH}" = "${PHOSH_IMAGE_BRANCH}" ]; then
-        ls -lh build-${ARCH}-${VARIANT}/BengalOS-*
+        ls -lh build-${ARCH}-${VARIANT}/BengalOS_*
         time make ARCH="${ARCH}" VARIANT=development IMAGE_HOST="${PHOSH_IMAGE_HOST}" upload
       else
         echo "Skipping upload on ${CI_COMMIT_BRANCH}."
