@@ -19,7 +19,7 @@ The immutable images are what one expects from a phone-like operating system. Th
 in their home directory. This allows us to support atomic A/B updates. The system
 will fallback to the old image after 3 failed boots.
 
-For already built images see [here](https://bengalos.phosh.mobi/nightly/).
+For already built images see [here](https://bengalos.phosh.mobi/images/).
 
 ### Building the Immutable Image
 
@@ -125,7 +125,7 @@ In case you need more information, feel free to get in touch with the developers
 
 The issue tracker is at <https://salsa.debian.org/BengalOS-team/bengalos-recipes/issues/>
 
-For more documentations see [docs/][./docs].
+For more documentations see [docs/](./docs).
 
 ## License
 
