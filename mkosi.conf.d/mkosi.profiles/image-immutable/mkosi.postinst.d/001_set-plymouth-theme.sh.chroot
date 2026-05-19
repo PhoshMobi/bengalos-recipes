@@ -1,0 +1,6 @@
+#!/bin/sh
+
+set -e
+
+# Set phosh's theme so we don't have to handle yet another file in /etc.
+sed -i  's/^Theme=.*/Theme=phosh/' /usr/share/plymouth/plymouthd.defaults
