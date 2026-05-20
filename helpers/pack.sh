@@ -73,9 +73,8 @@ function pack() {
   cp "BengalOS_${VERSION}.osrelease" "${VERSION}"
 
   cd "${VERSION}"
-  sha256sum BengalOS_*.xz > SHA256SUMS
-  rm -f SHA256SUMS.gpg
-  gpg --output SHA256SUMS.gpg --sign SHA256SUMS
+  sha256sum BengalOS_*.xz > "${VERSION}.SHA256SUMS.tmp"
+  mv "${VERSION}.SHA256SUMS.tmp" "${VERSION}.SHA256SUMS"
 }
 
 function upload() {
