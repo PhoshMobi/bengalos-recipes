@@ -63,7 +63,7 @@ function pack() {
   cd ${TOPLEVEL}/build-${DEVICE}-immutable
   mkdir -p "${VERSION}"
 
-  for part in usr.raw usr-verity.raw usr-verity-sig.raw efi; do
+  for part in raw usr.raw usr-verity.raw usr-verity-sig.raw efi; do
     local base="BengalOS_${VERSION}.${part}"
     local compressed="${VERSION}/BengalOS_${VERSION}.${part}.xz"
     echo "📦 Creating ${compressed}…"
