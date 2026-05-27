@@ -70,6 +70,7 @@ function pack() {
     xz --stdout "${base}" > "${compressed}.temp"
     mv "${compressed}.temp" "${compressed}"
   done
+  cp "BengalOS_${VERSION}.osrelease" "${VERSION}"
 
   cd "${VERSION}"
   sha256sum BengalOS_*.xz > SHA256SUMS
