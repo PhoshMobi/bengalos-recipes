@@ -5,24 +5,32 @@ set -e
 TOPLEVEL=${PWD}
 DEVICE=amd64
 UPLOAD_ONLY=0
+PACK_ONLY=0
+BUCKET=bengalos-staging
 
 function cleanup()
 {
-    cd "$TOPLEVEL"
+  cd "$TOPLEVEL"
+}
+
+function err()
+{
+  echo "❌ Pack & upload failed."
 }
 
 trap cleanup EXIT
+trap err ERR
 
 function help()
 {
     cat <<EOF
-Usage: $0 [-d|--device device] [--u|--upload-host hostname] [-U|--upload-only]
+Usage: $0 [-d|--device device] [-U|--upload-only] [-P|--pack-only]
 
 Pack and upload immutable BengalOS images
 
   --device:      The device type (e.g. amd64)
-  --upload-host: The host to upload to
-  --upload-only: Only upload, don't pack
+  --upload-only: Upload only, don't pack
+  --pack-only:   Pack only, don't upload
 EOF
 }
 
@@ -36,12 +44,11 @@ while [ -n "$1" ]; do
 	shift
 	DEVICE=$1
         ;;
-    -u|--upload-host)
-	shift
-	UPLOAD_HOST=$1
-        ;;
     -U|--upload-only)
 	UPLOAD_ONLY=1
+	;;
+    -P|--pack-only)
+	PACK_ONLY=1
 	;;
     *)
 	help
@@ -77,16 +84,25 @@ function pack() {
   cp "BengalOS_${VERSION}.osrelease" "${VERSION}"
 
   cd "${VERSION}"
-  sha256sum BengalOS_*.xz > "${VERSION}.SHA256SUMS.tmp"
+  sha256sum BengalOS_*.xz BengalOS_*.osrelease > "${VERSION}.SHA256SUMS.tmp"
   mv "${VERSION}.SHA256SUMS.tmp" "${VERSION}.SHA256SUMS"
 }
 
 function upload() {
-  local target="${UPLOAD_HOST}/${DEVICE}/base/dump/"
-
   cd "${TOPLEVEL}/build-${DEVICE}-immutable/${VERSION}"
-  echo "⤴️ Uploading images to ${target}…"
-  rsync --recursive --progress --verbose ./* "${target}/"
+
+  sha256sum "${VERSION}.SHA256SUMS" > 'hash'
+  hash=$(awk '{ print $1 }' hash)
+  if [ -z "$hash" ]; then
+    echo "Failed to calculate hash"
+    exit 1
+  fi
+
+  echo "🔐 Content hash is ${hash}"
+  echo "📤 Uploading to staging…"
+  aws s3 cp . "s3://${BUCKET}/staging/${hash}/" --recursive
+
+  echo "✅ Images uploaded to ${BUCKET}"
 }
 
 function mk_qcow2() {
@@ -100,6 +116,30 @@ function mk_qcow2() {
   qemu-img resize -q -f qcow2 "${qcow2}" 20G
 }
 
+if [ -z "$AWS_ENDPOINT_URL" ]; then
+    echo "Need AWS_ENDPOINT_URL."
+    exit 1
+else
+    echo "Using endppoint ${AWS_ENDPOINT_URL}"
+fi
+
+if [ -z "$AWS_DEFAULT_REGION" ]; then
+    echo "Need AWS_DEFAULT_REGION."
+    exit 1
+else
+    echo "Using region ${AWS_DEFAULT_REGION}"
+fi
+
+if [ -z "$AWS_ACCESS_KEY_ID" ]; then
+    echo "Need AWS_ACCESS_KEY_ID."
+    exit 1
+fi
+
+if [ -z "$AWS_SECRET_ACCESS_KEY" ]; then
+    echo "Need AWS_SECRET_ACCESS_KEY."
+    exit 1
+fi
+
 [ "${UPLOAD_ONLY}" == 1 ] || mk_qcow2
 [ "${UPLOAD_ONLY}" == 1 ] || pack
-[ -z "${UPLOAD_HOST}" ] || upload
+[ "${PACK_ONLY}" == 1 ] || upload
