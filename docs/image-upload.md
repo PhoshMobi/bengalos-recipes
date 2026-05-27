@@ -26,3 +26,12 @@ artifacts (like the qcow2 image) for testing.
 - Input for e.g. OpenQA
 - Deleted after 3 days
 - Not consumed via `systemd-sysupdate`
+
+### Publish
+
+To bless an image and make it publically available the metadata hash is passed to `helpers/bless.sh`.
+This transfers the metadata and images to public S3 bucket (`bengalos-images`).
+
+- Contains blessed images only
+- Consumed by via `systemd-sysupate`
+- Currently no automatic cleanup
