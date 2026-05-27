@@ -59,11 +59,15 @@ fi
 
 VERSION=$(cat "$VERSION_FILE")
 
-function pack() {
-  cd ${TOPLEVEL}/build-${DEVICE}-immutable
-  mkdir -p "${VERSION}"
+function prep() {
+    cd "${TOPLEVEL}/build-${DEVICE}-immutable"
+    mkdir -p "${VERSION}"
+}
 
-  for part in raw usr.raw usr-verity.raw usr-verity-sig.raw efi; do
+function pack() {
+  prep
+
+  for part in qcow2 raw usr.raw usr-verity.raw usr-verity-sig.raw efi; do
     local base="BengalOS_${VERSION}.${part}"
     local compressed="${VERSION}/BengalOS_${VERSION}.${part}.xz"
     echo "📦 Creating ${compressed}…"
@@ -85,5 +89,17 @@ function upload() {
   rsync --recursive --progress --verbose ./* "${target}/"
 }
 
+function mk_qcow2() {
+  local raw="BengalOS_${VERSION}.raw"
+  local qcow2="BengalOS_${VERSION}.qcow2"
+
+  prep
+
+  echo "🐄 Creating qcow2 image…"
+  qemu-img convert -f raw -O qcow2 "${raw}" "${qcow2}"
+  qemu-img resize -q -f qcow2 "${qcow2}" 20G
+}
+
+[ "${UPLOAD_ONLY}" == 1 ] || mk_qcow2
 [ "${UPLOAD_ONLY}" == 1 ] || pack
 [ -z "${UPLOAD_HOST}" ] || upload
