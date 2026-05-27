@@ -8,7 +8,7 @@ UPLOAD_ONLY=0
 
 function cleanup()
 {
-    cd $TOPLEVEL
+    cd "$TOPLEVEL"
 }
 
 trap cleanup EXIT
@@ -52,12 +52,12 @@ done
 
 VERSION_FILE="build-${DEVICE}-immutable/mkosi.version"
 
-if [ ! -f $VERSION_FILE ]; then
+if [ ! -f "$VERSION_FILE" ]; then
   echo "No version file at $VERSION_FILE"
   exit 1
 fi
 
-VERSION=$(cat $VERSION_FILE)
+VERSION=$(cat "$VERSION_FILE")
 
 function pack() {
   cd ${TOPLEVEL}/build-${DEVICE}-immutable
@@ -82,7 +82,7 @@ function upload() {
 
   cd "${TOPLEVEL}/build-${DEVICE}-immutable/${VERSION}"
   echo "⤴️ Uploading images to ${target}…"
-  rsync --recursive --progress --verbose * "${target}/"
+  rsync --recursive --progress --verbose ./* "${target}/"
 }
 
 [ "${UPLOAD_ONLY}" == 1 ] || pack
