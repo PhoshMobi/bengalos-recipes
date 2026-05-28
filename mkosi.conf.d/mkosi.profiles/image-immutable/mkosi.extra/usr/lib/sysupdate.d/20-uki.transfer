@@ -7,7 +7,7 @@ Verify=false
 Type=url-file
 # sysupdate doesn't allow for per version folders :(
 # https://github.com/systemd/systemd/issues/41977
-Path=https://bengalos.phosh.mobi/images/%a/%W/roaming/
+Path=https://bengalos.phosh.mobi/images/roaming/%a/%W/
 MatchPattern=%M_@v.efi.xz
 
 [Target]
