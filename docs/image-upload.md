@@ -27,6 +27,23 @@ artifacts (like the qcow2 image) for testing.
 - Deleted after 3 days
 - Not consumed via `systemd-sysupdate`
 
+#### Lifecycle policy
+
+Staging bucket lifecycle policy is set via
+
+```sh
+aws s3api put-bucket-lifecycle-configuration --bucket bengalos-staging --lifecycle-configuration  file://helpers/staging-lifecycle.json
+```
+
+Inspect via
+
+```sh
+aws s3api get-bucket-lifecycle-configuration --bucket bengalos-staging
+```
+
+These commands need `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`,
+`AWS_DEFAULT_REGION`, `AWS_ENDPOINT_URL` set in the environment.
+
 ### Publish
 
 To bless an image and make it publically available the metadata hash is passed to `helpers/bless.sh`.

@@ -1,0 +1,23 @@
+{
+ "Rules": [{
+    "ID": "expiry",
+    "Status": "Enabled",
+    "Prefix": "",
+
+    "Expiration": {
+      "Days": 3
+    },
+    "AbortIncompleteMultipartUpload": {
+      "DaysAfterInitiation": 1
+    }
+  },
+  {
+    "ID": "deletemarker",
+    "Status": "Enabled",
+    "Prefix": "",
+
+    "Expiration": {
+      "ExpiredObjectDeleteMarker": true
+    }
+  }]
+}
