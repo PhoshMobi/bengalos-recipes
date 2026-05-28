@@ -49,7 +49,10 @@ pylint:
 	black --check *.py
 	flake8 *.py
 
-lint: pylint
+shellcheck:
+	shellcheck helpers/get-qcow2.sh
+
+lint: pylint shellcheck
 	mdl -s .mdl.rb -g *.md docs/*.md
 
 clean:
