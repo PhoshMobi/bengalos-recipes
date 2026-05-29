@@ -170,6 +170,16 @@ else
     echo "Using region ${AWS_DEFAULT_REGION}"
 fi
 
+if [ -z "$AWS_ACCESS_KEY_ID" ]; then
+    echo "Need AWS_ACCESS_KEY_ID."
+    exit 1
+fi
+
+if [ -z "$AWS_SECRET_ACCESS_KEY" ]; then
+    echo "Need AWS_SECRET_ACCESS_KEY."
+    exit 1
+fi
+
 if [ -z "${HASH}" ]; then
     echo "No hash given".
     exit 1
