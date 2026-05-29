@@ -3,6 +3,7 @@
 stages:
   - build
   - test
+  - publish
 
 workflow:
   rules:
@@ -88,6 +89,27 @@ test:immutable:nightly:amd64:
   artifacts:
     paths:
       - build-amd64-immutable/*/hash
+
+publish:immutable:nightly:amd64:
+  stage: publish
+  tags: ["phosh-images"]
+  resource_group: phoshimages
+  variables:
+    AWS_ACCESS_KEY_ID: $BLESS_KEY
+    AWS_SECRET_ACCESS_KEY: $BLESS_SECRET
+  needs:
+    - job: test:immutable:nightly:amd64
+      artifacts: true
+  script:
+    - |
+      HASH=$(awk '{ print $1 }' build-amd64-immutable/*/hash | head -n 1)
+      echo "Blessing ${HASH}"
+      helpers/bless.sh --hash "${HASH}"
+  artifacts:
+    paths:
+      - build-amd64-immutable/*/hash
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main" && $CI_PROJECT_PATH == "BengalOS-team/bengalos-recipes" && $PHOSH_IMAGE_UPLOAD != ""'
 
 lint:
   stage: test
