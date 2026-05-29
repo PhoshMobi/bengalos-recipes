@@ -1,8 +1,7 @@
 ---
 
 stages:
-  - build:dev
-  - build:immutable
+  - build
   - test
 
 workflow:
@@ -33,8 +32,9 @@ default:
       - 'stuck_or_timeout_failure'
 
 build:dev:nightly:amd64:
-  stage: build:dev
+  stage: build
   tags: ["phosh-images"]
+  resource_group: phoshimages
   variables:
     ARCH: amd64
     VARIANT: development
@@ -51,9 +51,9 @@ build:dev:nightly:amd64:
       fi
 
 build:immutable:nightly:amd64:
-  stage: build:immutable
+  stage: build
   tags: ["phosh-images"]
-  needs: ['build:dev:nightly:amd64']
+  resource_group: phoshimages
   variables:
     ARCH: amd64
     VARIANT: immutable
