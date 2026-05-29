@@ -80,10 +80,11 @@ test:immutable:nightly:amd64:
       artifacts: true
   script:
     - |
+      rm -f *.qcow2
       HASH=$(awk '{ print $1 }' build-amd64-immutable/*/hash | head -n 1)
       echo "Testing ${HASH}"
       time ./helpers/get-qcow2.sh --hash "${HASH}"
-      /bin/true # Trigger tests
+      helpers/smoke-test-vm.sh --name "${HASH}" --disk *.qcow2
   artifacts:
     paths:
       - build-amd64-immutable/*/hash
