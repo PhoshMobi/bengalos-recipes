@@ -57,8 +57,36 @@ build:immutable:nightly:amd64:
   variables:
     ARCH: amd64
     VARIANT: immutable
+    AWS_ACCESS_KEY_ID: $PUSH_KEY
+    AWS_SECRET_ACCESS_KEY: $PUSH_SECRET
   script:
     - XDG_CACHE_HOME=~/.cache make clean bengalos-${ARCH}-${VARIANT}
+    - |
+      if [ -n "$AWS_ENDPOINT_URL" ]; then
+        time ./helpers/pack.sh
+      else
+        echo "Skipping upload on ${CI_COMMIT_BRANCH}."
+      fi
+  artifacts:
+    paths:
+      - build-amd64-immutable/*/hash
+
+test:immutable:nightly:amd64:
+  stage: test
+  tags: ["phosh-images"]
+  resource_group: phoshimages
+  needs:
+    - job: build:immutable:nightly:amd64
+      artifacts: true
+  script:
+    - |
+      HASH=$(awk '{ print $1 }' build-amd64-immutable/*/hash | head -n 1)
+      echo "Testing ${HASH}"
+      time ./helpers/get-qcow2.sh --hash "${HASH}"
+      /bin/true # Trigger tests
+  artifacts:
+    paths:
+      - build-amd64-immutable/*/hash
 
 lint:
   stage: test
