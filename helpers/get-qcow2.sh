@@ -66,7 +66,7 @@ function fetch()
       exit 1
   fi
   qcow2=$(basename "${qcow2_xz}" .xz)
-  wget -nv -O- "${TMPDIR}/SHA256SUMS" "${endpoint_url}/${qcow2_xz}" | unxz > "${TMPDIR}/${qcow2}"
+  wget -nv -O- "${endpoint_url}/${qcow2_xz}" | unxz > "${TMPDIR}/${qcow2}"
   mv "${TMPDIR}/${qcow2}" "${OUTPUT_DIR}"
 }
 
