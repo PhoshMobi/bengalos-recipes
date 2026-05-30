@@ -53,20 +53,20 @@ function fetch()
 
   endpoint_url="${AWS_ENDPOINT_URL}/${BUCKET}/staging/${HASH}"
   echo "📥 Fetching ${HASH}…"
-  wget -O "${TMPDIR}/hash" "${endpoint_url}/hash" | awk '{ print $2 }'
+  wget -nv -O "${TMPDIR}/hash" "${endpoint_url}/hash" | awk '{ print $2 }'
   sha256sums=$(awk '{ print $2 }' "${TMPDIR}/hash")
   if [ -z "${sha256sums}" ]; then
       echo "Failed to get checksum file"
       exit 1
   fi
-  wget -O "${TMPDIR}/SHA256SUMS" "${endpoint_url}/${sha256sums}"
+  wget -nv -O "${TMPDIR}/SHA256SUMS" "${endpoint_url}/${sha256sums}"
   qcow2_xz=$(awk '/.qcow2.xz/ { print $2 }' "${TMPDIR}/SHA256SUMS" | head -n 1)
   if [ -z "${qcow2_xz}" ]; then
       echo "Failed to get qcow name"
       exit 1
   fi
   qcow2=$(basename "${qcow2_xz}" .xz)
-  wget -O- "${TMPDIR}/SHA256SUMS" "${endpoint_url}/${qcow2_xz}" | unxz > "${TMPDIR}/${qcow2}"
+  wget -nv -O- "${endpoint_url}/${qcow2_xz}" | unxz > "${TMPDIR}/${qcow2}"
   mv "${TMPDIR}/${qcow2}" "${OUTPUT_DIR}"
 }
 
