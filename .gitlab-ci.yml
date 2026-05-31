@@ -109,7 +109,7 @@ publish:immutable:nightly:amd64:
     paths:
       - build-amd64-immutable/*/hash
   rules:
-    - if: '$CI_COMMIT_BRANCH == "$CI_DEFAULT_BRANCH" && $CI_PROJECT_PATH == "BengalOS-team/bengalos-recipes" && $PHOSH_IMAGE_UPLOAD != ""'
+    - if: '$CI_COMMIT_BRANCH == "$CI_DEFAULT_BRANCH" && $CI_PROJECT_PATH == "BengalOS-team/bengalos-recipes" && $CI_PIPELINE_SOURCE == "schedule"'
 
 lint:
   stage: test
