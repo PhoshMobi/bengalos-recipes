@@ -1,4 +1,10 @@
 #!/bin/bash
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Copyright (C) 2026 Phosh.mobi e.V.
+#
+# Bless BengalOS images and publish them
 
 set -e
 
