@@ -80,7 +80,7 @@ function prep() {
 function pack() {
   prep
 
-  for part in qcow2 raw usr.raw usr-verity.raw usr-verity-sig.raw efi; do
+  for part in qcow2 usr.raw usr-verity.raw usr-verity-sig.raw efi; do
     local base="BengalOS_${VERSION}.${part}"
     local compressed="${VERSION}/BengalOS_${VERSION}.${part}.xz"
     echo "📦 Creating ${compressed}…"
