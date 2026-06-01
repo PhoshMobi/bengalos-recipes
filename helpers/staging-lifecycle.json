@@ -5,7 +5,7 @@
     "Prefix": "",
 
     "Expiration": {
-      "Days": 3
+      "Days": 1
     },
     "AbortIncompleteMultipartUpload": {
       "DaysAfterInitiation": 1

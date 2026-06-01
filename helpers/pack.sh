@@ -1,4 +1,10 @@
 #!/bin/bash
+#
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Copyright (C) 2026 Phosh.mobi e.V.
+#
+# Pack BengalOS images and upload them to staging
 
 set -e
 
@@ -74,7 +80,7 @@ function prep() {
 function pack() {
   prep
 
-  for part in qcow2 raw usr.raw usr-verity.raw usr-verity-sig.raw efi; do
+  for part in qcow2 usr.raw usr-verity.raw usr-verity-sig.raw efi; do
     local base="BengalOS_${VERSION}.${part}"
     local compressed="${VERSION}/BengalOS_${VERSION}.${part}.xz"
     echo "📦 Creating ${compressed}…"
