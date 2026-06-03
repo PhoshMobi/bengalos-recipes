@@ -124,3 +124,4 @@ lint:
       changes:
         paths:
           - "*.md"
+          - "docs/*.md"
