@@ -20,7 +20,7 @@ variables:
   LINT_DEPS: black flake8 markdownlint mypy
 
 default:
-  timeout: 6 hours
+  timeout: 36 hours
   # Allow jobs to be caneled on new commits
   interruptible: true
   # Retry on infra hickups automatically
