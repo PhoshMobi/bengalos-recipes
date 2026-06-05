@@ -28,6 +28,6 @@ toolbox create
 Once downloaded you can install dependencies, build, etc as you're used to
 on mutable systems:
 
-```
+```sh
 toolbox enter
 ```

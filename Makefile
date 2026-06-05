@@ -9,7 +9,7 @@ export PATH := $(addsuffix :/usr/sbin,$(PATH))
 bengalos-amd64-development: build-amd64-development/.done
 
 build-amd64-development/.done:
-	./configure.py build-amd64-development/
+	./bengalos-builder.py build-amd64-development/
 	mkosi -C build-amd64-development -B -i \
 	  --hostname phosh \
 		--profile image-development,device-amd64,zram,phosh
@@ -24,8 +24,7 @@ bengalos-amd64-development-run: build-amd64-development/.done
 bengalos-amd64-immutable: build-amd64-immutable/.done
 
 build-amd64-immutable/.prep:
-	./configure.py build-amd64-immutable/
-	mkosi -C build-amd64-immutable genkey
+	./bengalos-builder.py build-amd64-immutable/
 	touch build-amd64-immutable/.prep
 
 build-amd64-immutable/.done: build-amd64-immutable/.prep

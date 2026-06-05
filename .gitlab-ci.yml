@@ -17,7 +17,7 @@ workflow:
 variables:
   PHOSH_IMAGE_BRANCH: main
   PHOSH_IMAGE_UPLOAD_OPTS: --verbose
-  LINT_DEPS: black flake8 markdownlint mypy
+  LINT_DEPS: black flake8 markdownlint shellcheck mypy
 
 default:
   timeout: 36 hours
@@ -60,8 +60,20 @@ build:immutable:nightly:amd64:
     VARIANT: immutable
     AWS_ACCESS_KEY_ID: $PUSH_KEY
     AWS_SECRET_ACCESS_KEY: $PUSH_SECRET
+    MKOSI_SECURE_BOOT_CRT: $SECURE_BOOT_CRT
+    MKOSI_SECURE_BOOT_KEY: $SECURE_BOOT_KEY
   script:
-    - XDG_CACHE_HOME=~/.cache make clean bengalos-${ARCH}-${VARIANT}
+    - |
+      XDG_CACHE_HOME=~/.cache make clean
+      mkdir -p build-${ARCH}-${VARIANT}
+      # Secure boot certificate
+      echo "$MKOSI_SECURE_BOOT_CRT" > build-${ARCH}-${VARIANT}/mkosi.crt
+      openssl x509 -in "build-${ARCH}-${VARIANT}/mkosi.crt" -noout -text
+      # Secure boot signing key
+      UMASK=$(umask) && umask 077
+      echo "$MKOSI_SECURE_BOOT_KEY" | base64 -d > build-${ARCH}-${VARIANT}/mkosi.key
+      umask ${UMASK}
+      XDG_CACHE_HOME=~/.cache make bengalos-${ARCH}-${VARIANT}
     - |
       if [ -n "$AWS_ENDPOINT_URL" ]; then
         time ./helpers/pack.sh
