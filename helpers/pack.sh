@@ -122,26 +122,26 @@ function mk_qcow2() {
   qemu-img resize -q -f qcow2 "${qcow2}" 20G
 }
 
-if [ -z "$AWS_ENDPOINT_URL" ]; then
+if [ -z "$AWS_ENDPOINT_URL" ] && [ "${PACK_ONLY}" -eq 0 ]; then
     echo "Need AWS_ENDPOINT_URL."
     exit 1
 else
     echo "Using endppoint ${AWS_ENDPOINT_URL}"
 fi
 
-if [ -z "$AWS_DEFAULT_REGION" ]; then
+if [ -z "$AWS_DEFAULT_REGION" ] && [ "${PACK_ONLY}" -eq 0 ]; then
     echo "Need AWS_DEFAULT_REGION."
     exit 1
 else
     echo "Using region ${AWS_DEFAULT_REGION}"
 fi
 
-if [ -z "$AWS_ACCESS_KEY_ID" ]; then
+if [ -z "$AWS_ACCESS_KEY_ID" ] && [ "${PACK_ONLY}" -eq 0 ]; then
     echo "Need AWS_ACCESS_KEY_ID."
     exit 1
 fi
 
-if [ -z "$AWS_SECRET_ACCESS_KEY" ]; then
+if [ -z "$AWS_SECRET_ACCESS_KEY" ] && [ "${PACK_ONLY}" -eq 0 ]; then
     echo "Need AWS_SECRET_ACCESS_KEY."
     exit 1
 fi
