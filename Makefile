@@ -24,7 +24,6 @@ bengalos-amd64-development-run: build-amd64-development/.done
 bengalos-amd64-immutable: build-amd64-immutable/.done
 
 build-amd64-immutable/.prep:
-	mkosi -C build-amd64-immutable genkey
 	./bengalos-builder.py build-amd64-immutable/
 	touch build-amd64-immutable/.prep
 
