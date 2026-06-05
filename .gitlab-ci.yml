@@ -17,7 +17,7 @@ workflow:
 variables:
   PHOSH_IMAGE_BRANCH: main
   PHOSH_IMAGE_UPLOAD_OPTS: --verbose
-  LINT_DEPS: black flake8 markdownlint mypy
+  LINT_DEPS: black flake8 markdownlint shellcheck mypy
 
 default:
   timeout: 36 hours
