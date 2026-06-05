@@ -92,6 +92,7 @@ function pack() {
   cd "${VERSION}"
   sha256sum BengalOS_*.xz BengalOS_*.osrelease > "${VERSION}.SHA256SUMS.tmp"
   mv "${VERSION}.SHA256SUMS.tmp" "${VERSION}.SHA256SUMS"
+  ln -sf "${VERSION}.SHA256SUMS" SHA256SUMS
 }
 
 function upload() {
