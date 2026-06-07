@@ -8,7 +8,7 @@ First add a policy for podman. E.g. this allows to pull from everywhere:
 
 ```sh
 mkdir -p ~/.config/containers/
-cat <<EOF >policy.json
+cat <<EOF > ~/.config/containers/policy.json
 {
     "default": [
         {
@@ -31,3 +31,8 @@ on mutable systems:
 ```sh
 toolbox enter
 ```
+
+To run the container as non-root you need to create the `/etc/subuid` and
+`/etc/subgid` files. See
+<https://salsa.debian.org/BengalOS-team/bengalos-recipes/-/work_items/16>
+for details.
