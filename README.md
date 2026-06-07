@@ -49,7 +49,7 @@ If you prefer libvirt related tooling use:
 
 ```sh
 truncate -s 20G <imagefile.img>
-virt-install --connect qemu:///session --boot loader=/usr/share/OVMF/OVMF_CODE_4M.fd,loader.readonly=yes,loader.type=pflash,loader_secure=no --vcpus=4 --memory=4096 --osinfo debiantesting -n bengalos --video qxl --transient --import --disk <imagefile.img> --serial pty
+virt-install --connect qemu:///session --boot loader=/usr/share/OVMF/OVMF_CODE_4M.fd,loader.readonly=yes,loader.type=pflash,loader_secure=no --vcpus=4 --memory=4096 --osinfo debiantesting -n bengalos --video qxl --transient --import --disk <imagefile.img> --serial pty --vsock cid.auto=yes
 ```
 
 You can update the image at any time by running
