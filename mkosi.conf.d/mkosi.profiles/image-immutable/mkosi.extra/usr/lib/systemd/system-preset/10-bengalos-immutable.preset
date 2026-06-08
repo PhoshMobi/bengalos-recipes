@@ -1,0 +1,4 @@
+# No need for apt timers on immutable
+disable apt-daily.timer
+disable apt-daily-upgrade.timer
+disable apt-listchanges.timer
