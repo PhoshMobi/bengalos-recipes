@@ -1,0 +1,9 @@
+# Disable daemon by default, vsock activation still works
+disable sshd.*
+disable ssh.*
+enable ssh@.service
+enable sshd-keygen.service
+
+# Disable avahi, we have systemd resolved and avahi fails to
+# start due to the missing avahi user
+disable avahi-daemon.*
