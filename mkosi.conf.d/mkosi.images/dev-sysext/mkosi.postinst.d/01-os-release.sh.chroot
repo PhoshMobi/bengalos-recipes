@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -e
+
+mkdir -p /usr/lib/extension-release.d
+
+cat <<EOF > /usr/lib/extension-release.d/extension-release.${IMAGE_ID}-dev-sysext_${IMAGE_VERSION}
+ID=bengalos
+VERSION_ID=${IMAGE_VERSION}
+ARCHITECTURE=${ARCHITECTURE}
+EOF
