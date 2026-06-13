@@ -137,3 +137,15 @@ lint:
         paths:
           - "*.md"
           - "docs/*.md"
+
+cleanup-blessed:
+  image: python:3.13
+  variables:
+    AWS_ACCESS_KEY_ID: $BLESS_KEY
+    AWS_SECRET_ACCESS_KEY: $BLESS_SECRET
+  before_script:
+    - pip install boto3
+  script:
+    - helpers/cleanup-blessed-builds.py --folder roaming/x86-64/qemu
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
