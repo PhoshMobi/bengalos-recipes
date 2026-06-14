@@ -140,7 +140,7 @@ lint:
           - "*.md"
           - "docs/*.md"
 
-cleanup-blessed:
+.cleanup-blessed:
   stage: cleanup
   tags: ["phosh-images"]
   resource_group: phoshimages
