@@ -13,8 +13,16 @@ TMPDIR="$(mktemp -d)"
 TIMEOUT=120
 SLEEP=5
 
+screenshot_vm()
+{
+  virsh screenshot "${NAME}" "smoke-${NAME}-boot.png" || true
+}
+
 function cleanup()
 {
+  # Always screenshot the VM to ease diagnosing errors
+  screenshot_vm
+
   cd "$TOPLEVEL"
   [ -z "${TMPDIR}" ] || rm -rf "${TMPDIR}"
   [ -z "${NAME}" ] || virsh destroy "${NAME}"
@@ -114,3 +122,4 @@ check_vm()
 build_vm
 wait_for_vm
 check_vm
+screenshot_vm
