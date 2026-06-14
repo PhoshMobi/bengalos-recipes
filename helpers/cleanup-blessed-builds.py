@@ -7,6 +7,7 @@
 # Expire old blessed builds
 
 import argparse
+import os
 import re
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
@@ -153,7 +154,7 @@ def delete_old_builds(builds, keep, dry_run):
             continue
 
         for key in info["keys"]:
-            objects_to_delete.append({"Key": key})
+            objects_to_delete.append(key)
 
     if not objects_to_delete:
         print("Nothing to delete")
@@ -163,14 +164,12 @@ def delete_old_builds(builds, keep, dry_run):
 
     if dry_run:
         for obj in objects_to_delete:
-            print("DELETE", obj["Key"])
+            print("DELETE", obj)
         return
 
-    for i in range(0, len(objects_to_delete), 100):
-        s3.delete_objects(
-            Bucket=BUCKET,
-            Delete={"Objects": objects_to_delete[i : i + 100]},
-        )
+    for obj in objects_to_delete:
+        print(f"Deleting {obj}")
+        s3.delete_object(Bucket=BUCKET, Key=obj)
 
 
 def update_sha256sums(to_keep, dry_run):
@@ -223,6 +222,26 @@ def main():
         "--bucket", type=str, default=BUCKET, help="bucket to run expiry in"
     )
     args = parser.parse_args()
+
+    endpoint = os.getenv("AWS_ENDPOINT_URL")
+    if endpoint is None:
+        print("No AWS_ENDPOINT_URL")
+        return 1
+    print(f"Using AWS_ENDPOINT_URL {endpoint}")
+
+    region = os.getenv("AWS_DEFAULT_REGION")
+    if region is None:
+        print("No AWS_DEFAULT_REGION")
+        return 1
+    print(f"Using AWS_DEFAULT_REGION {region}")
+
+    if os.getenv("AWS_ACCESS_KEY_ID") is None:
+        print("No AWS_ACCESS_KEY_ID")
+        return 1
+
+    if os.getenv("AWS_SECRET_ACCESS_KEY") is None:
+        print("No AWS_SECRET_ACCESS_KEY")
+        return 1
 
     objects = list_objects()
     builds = discover_builds(objects, args.folder)
