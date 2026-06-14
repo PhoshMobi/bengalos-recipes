@@ -101,6 +101,7 @@ test:immutable:nightly:amd64:
   artifacts:
     paths:
       - build-amd64-immutable/*/hash
+      - "smoke-*.png"
 
 publish:immutable:nightly:amd64:
   stage: publish
