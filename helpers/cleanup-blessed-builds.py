@@ -7,6 +7,7 @@
 # Expire old blessed builds
 
 import argparse
+import os
 import re
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
@@ -223,6 +224,26 @@ def main():
         "--bucket", type=str, default=BUCKET, help="bucket to run expiry in"
     )
     args = parser.parse_args()
+
+    endpoint = os.getenv("AWS_ENDPOINT_URL")
+    if endpoint is None:
+        print("No AWS_ENDPOINT_URL")
+        return 1
+    print(f"Using AWS_ENDPOINT_URL {endpoint}")
+
+    region = os.getenv("AWS_DEFAULT_REGION")
+    if region is None:
+        print("No AWS_DEFAULT_REGION")
+        return 1
+    print(f"Using AWS_DEFAULT_REGION {region}")
+
+    if os.getenv("AWS_ACCESS_KEY_ID") is None:
+        print("No AWS_ACCESS_KEY_ID")
+        return 1
+
+    if os.getenv("AWS_SECRET_ACCESS_KEY") is None:
+        print("No AWS_SECRET_ACCESS_KEY")
+        return 1
 
     objects = list_objects()
     builds = discover_builds(objects, args.folder)
