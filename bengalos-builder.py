@@ -45,7 +45,7 @@ def configure_version(dir_path: pathlib.Path, version: str):
 
 
 def configure_keys(dir_path: pathlib.Path, blessed: bool):
-    """Configure secureboot keyys"""
+    """Configure secureboot keys"""
     key = dir_path / "mkosi.key"
     cert = dir_path / "mkosi.crt"
     if blessed:
