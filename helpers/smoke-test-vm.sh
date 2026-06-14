@@ -75,8 +75,9 @@ function build_vm()
         --graphics none \
         --video qxl \
         --serial pty \
-        --boot loader=/usr/share/OVMF/OVMF_CODE_4M.fd,loader.readonly=yes,loader.type=pflash,loader_secure=no \
-        --disk "$DISK,format=qcow2"
+        --boot uefi,firmware.feature0.name=secure-boot,firmware.feature0.enabled=yes,firmware.feature1.name=enrolled-keys,firmware.feature1.enabled=no \
+        --disk "$DISK,format=qcow2" \
+	--vsock cid.auto=yes
 }
 
 wait_for_vm()
