@@ -154,7 +154,7 @@ def delete_old_builds(builds, keep, dry_run):
             continue
 
         for key in info["keys"]:
-            objects_to_delete.append({"Key": key})
+            objects_to_delete.append(key)
 
     if not objects_to_delete:
         print("Nothing to delete")
@@ -164,14 +164,12 @@ def delete_old_builds(builds, keep, dry_run):
 
     if dry_run:
         for obj in objects_to_delete:
-            print("DELETE", obj["Key"])
+            print("DELETE", obj)
         return
 
-    for i in range(0, len(objects_to_delete), 100):
-        s3.delete_objects(
-            Bucket=BUCKET,
-            Delete={"Objects": objects_to_delete[i : i + 100]},
-        )
+    for obj in objects_to_delete:
+        print(f"Deleting {obj}")
+        s3.delete_object(Bucket=BUCKET, Key=obj)
 
 
 def update_sha256sums(to_keep, dry_run):
