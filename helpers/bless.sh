@@ -173,6 +173,11 @@ function bless()
           --only-show-errors
   done
 
+  # TODO: Current systemd looks at SHA256SUMS.sha256.asc. Recheck with
+  # 261 and file issue if still present
+  aws s3 cp "s3://${BLESSED_BUCKET}/${blessed_prefix}/SHA256SUMS.gpg" \
+      "s3://${BLESSED_BUCKET}/${blessed_prefix}/SHA256SUMS.sha256.asc"
+
   # Update latest images
   qcow2=$(awk '/.qcow2.xz/ { print $2 }' "${TMPDIR}/${sha256sums}" | head -n 1)
   # Not all architectures have qcow2 images:
