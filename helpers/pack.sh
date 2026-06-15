@@ -13,6 +13,7 @@ DEVICE=amd64
 UPLOAD_ONLY=0
 PACK_ONLY=0
 BUCKET=bengalos-staging
+SIGNING_KEY="${BENGALOS_SIGNING_KEY}"
 
 function cleanup()
 {
@@ -88,11 +89,22 @@ function pack() {
     mv "${compressed}.temp" "${compressed}"
   done
   cp "BengalOS_${VERSION}.osrelease" "${VERSION}"
+}
+
+function sign() {
+  local checksums
+  local signature
+
+  prep
 
   cd "${VERSION}"
-  sha256sum BengalOS_*.xz BengalOS_*.osrelease > "${VERSION}.SHA256SUMS.tmp"
-  mv "${VERSION}.SHA256SUMS.tmp" "${VERSION}.SHA256SUMS"
-  ln -sf "${VERSION}.SHA256SUMS" SHA256SUMS
+  checksums="${VERSION}.SHA256SUMS"
+  signature="${VERSION}.SHA256SUMS.gpg"
+  sha256sum BengalOS_*.xz BengalOS_*.osrelease > "${checksums}.tmp"
+  mv "${checksums}.tmp" "${checksums}"
+  gpg --sign --default-key="${SIGNING_KEY}" --detach-sign --armor -o "${signature}" "${checksums}"
+  ln -sf "${checksums}" SHA256SUMS
+  ln -sf "${signature}" SHA256SUMS.gpg
 }
 
 function upload() {
@@ -147,6 +159,14 @@ if [ -z "$AWS_SECRET_ACCESS_KEY" ] && [ "${PACK_ONLY}" -eq 0 ]; then
     exit 1
 fi
 
-[ "${UPLOAD_ONLY}" == 1 ] || mk_qcow2
-[ "${UPLOAD_ONLY}" == 1 ] || pack
+if [ -z "$BENGALOS_SIGNING_KEY" ] && [ "${UPLOAD_ONLY}" -eq 0 ]; then
+    echo "Need BENGALOS_SIGNING_KEY."
+    exit 1
+fi
+
+if [ "${UPLOAD_ONLY}" != 1 ]; then
+    mk_qcow2
+    pack
+    sign
+fi
 [ "${PACK_ONLY}" == 1 ] || upload

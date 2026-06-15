@@ -7,6 +7,7 @@
 # Bless BengalOS images and publish them
 
 set -e
+set -o pipefail
 
 TOPLEVEL=${PWD}
 STAGING_BUCKET=bengalos-staging
@@ -15,6 +16,7 @@ BLESSED_BUCKET=bengalos-images
 TMPDIR="$(mktemp -d)"
 # TODO: get from metainfo
 ARCH=x86-64
+SIGNING_KEY="${BENGALOS_SIGNING_KEY}"
 
 function cleanup()
 {
@@ -81,17 +83,23 @@ function bless()
       exit 1
   fi
 
-  aws s3 cp \
-      "s3://${STAGING_BUCKET}/${STAGING_PREFIX}/${HASH}/${sha256sums}" \
-      "${TMPDIR}/${sha256sums}" \
-      --only-show-errors
+  for file in "${sha256sums}" "${sha256sums}.gpg"; do
+      aws s3 cp \
+	  "s3://${STAGING_BUCKET}/${STAGING_PREFIX}/${HASH}/${file}" \
+	  "${TMPDIR}/${file}" \
+	  --only-show-errors
+  done
 
   echo "🔐 Verifying checksum file integrity…"
-
-  {
+  { # Verify checksum file of to be blessed images
     cd "${TMPDIR}"
     if ! sha256sum -c hash; then
       echo "Checksum of ${sha256sums} invalid"
+      exit 1
+    fi
+
+    if ! gpg --verify "${sha256sums}.gpg" "${sha256sums}"; then
+      echo "🚨 Failed to verify signature on staging checksum file ${sha256sums}"
       exit 1
     fi
   }
@@ -131,21 +139,44 @@ function bless()
 
   echo "📄 Updating global SHA256SUMS index…"
   # Fetch existing index
-  aws s3 cp \
-      "s3://${BLESSED_BUCKET}/${blessed_prefix}/SHA256SUMS" \
-      "${TMPDIR}/SHA256SUMS" \
-      --only-show-errors \
-      || touch "${TMPDIR}/SHA256SUMS"
+  for file in SHA256SUMS SHA256SUMS.gpg; do
+      aws s3 cp \
+          "s3://${BLESSED_BUCKET}/${blessed_prefix}/${file}" \
+          "${TMPDIR}/${file}" \
+          --only-show-errors \
+          || touch "${TMPDIR}/${file}"
+  done
 
-  mv "${TMPDIR}/SHA256SUMS" "${TMPDIR}/SHA256SUMS".tmp
-  cat "${TMPDIR}/${sha256sums}" >> "${TMPDIR}/SHA256SUMS".tmp
-  mv "${TMPDIR}/SHA256SUMS".tmp "${TMPDIR}/SHA256SUMS"
+  { # Verify checksum file of currently blessed images
+    cd "${TMPDIR}"
+    if [ ! -s SHA256SUMS ]; then
+      echo "⚠️ Not checking signature on empty checksum file."
+    elif ! gpg --verify SHA256SUMS.gpg SHA256SUMS; then
+      echo "🚨 Failed to verify signature on checksum file"
+      exit 1
+    fi
+  }
+
+  { # Add new checksums and resign
+    cd "${TMPDIR}"
+    cat SHA256SUMS "${sha256sums}" | sort -k2,2 | uniq >> SHA256SUMS.tmp
+    mv SHA256SUMS.tmp SHA256SUMS
+    rm SHA256SUMS.gpg
+    gpg --sign --default-key="${SIGNING_KEY}" --detach-sign --armor -o SHA256SUMS.gpg SHA256SUMS
+  }
 
   # Upload updated index
-  aws s3 cp \
-      "${TMPDIR}/SHA256SUMS" \
-      "s3://${BLESSED_BUCKET}/${blessed_prefix}/SHA256SUMS" \
-      --only-show-errors
+  for file in SHA256SUMS SHA256SUMS.gpg; do
+      aws s3 cp \
+          "${TMPDIR}/${file}" \
+          "s3://${BLESSED_BUCKET}/${blessed_prefix}/${file}" \
+          --only-show-errors
+  done
+
+  # TODO: Current systemd looks at SHA256SUMS.sha256.asc. Recheck with
+  # 261 and file issue if still present
+  aws s3 cp "s3://${BLESSED_BUCKET}/${blessed_prefix}/SHA256SUMS.gpg" \
+      "s3://${BLESSED_BUCKET}/${blessed_prefix}/SHA256SUMS.sha256.asc"
 
   # Update latest images
   qcow2=$(awk '/.qcow2.xz/ { print $2 }' "${TMPDIR}/${sha256sums}" | head -n 1)

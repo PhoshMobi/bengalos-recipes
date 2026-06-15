@@ -1,7 +1,5 @@
 [Transfer]
 ProtectVersion=%A
-# TODO: add keyring
-Verify=false
 
 [Source]
 Type=url-file

@@ -33,6 +33,15 @@ default:
       - 'scheduler_failure'
       - 'stuck_or_timeout_failure'
 
+.import_gpg_key: &import_gpg_key
+  - GNUPGHOME=$(mktemp -d)
+  - export GNUPGHOME
+  - echo "$SIGNING_KEY" | base64 -d | gpg --batch --import
+  - gpg --list-keys $BENGALOS_SIGNING_KEY
+
+.clear_gpg_key: &clear_gpg_key
+  - rm -rf $GNUPGHOME
+
 build:dev:nightly:amd64:
   stage: build
   tags: ["phosh-images"]
@@ -63,6 +72,9 @@ build:immutable:nightly:amd64:
     AWS_SECRET_ACCESS_KEY: $PUSH_SECRET
     MKOSI_SECURE_BOOT_CRT: $SECURE_BOOT_CRT
     MKOSI_SECURE_BOOT_KEY: $SECURE_BOOT_KEY
+    BENGALOS_SIGNING_KEY: $SIGNING_KEY_ID
+  before_script:
+    - *import_gpg_key
   script:
     - |
       XDG_CACHE_HOME=~/.cache make clean
@@ -81,6 +93,9 @@ build:immutable:nightly:amd64:
       else
         echo "Skipping upload on ${CI_COMMIT_BRANCH}."
       fi
+  after_script:
+    - *clear_gpg_key
+    - rm -f build-${ARCH}-${VARIANT}/mkosi.key
   artifacts:
     paths:
       - build-amd64-immutable/*/hash
@@ -111,14 +126,20 @@ publish:immutable:nightly:amd64:
   variables:
     AWS_ACCESS_KEY_ID: $BLESS_KEY
     AWS_SECRET_ACCESS_KEY: $BLESS_SECRET
+    BENGALOS_SIGNING_KEY: $SIGNING_KEY_ID
   needs:
     - job: test:immutable:nightly:amd64
       artifacts: true
+  before_script:
+    - *import_gpg_key
   script:
     - |
       HASH=$(awk '{ print $1 }' build-amd64-immutable/*/hash | head -n 1)
       echo "Blessing ${HASH}"
       helpers/bless.sh --hash "${HASH}"
+  after_script:
+    - *clear_gpg_key
+    - rm -f build-${ARCH}-${VARIANT}/mkosi.key
   artifacts:
     paths:
       - build-amd64-immutable/*/hash
@@ -140,7 +161,7 @@ lint:
           - "*.md"
           - "docs/*.md"
 
-cleanup-blessed:
+.cleanup-blessed:
   stage: cleanup
   tags: ["phosh-images"]
   resource_group: phoshimages
