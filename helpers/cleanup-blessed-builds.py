@@ -9,6 +9,9 @@
 import argparse
 import os
 import re
+import subprocess
+import sys
+import tempfile
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
 
@@ -22,21 +25,21 @@ s3 = boto3.client("s3")
 BUILD_RE = re.compile(r"BengalOS_(\d+\.\d+\.(\d{8})\.\d+)")
 
 
-def list_objects():
+def list_objects(bucket, folder):
     paginator = s3.get_paginator("list_objects_v2")
 
     objects = []
 
     for page in paginator.paginate(
-        Bucket=BUCKET,
-        Prefix=PREFIX,
+        Bucket=bucket,
+        Prefix=folder,
     ):
         objects.extend(page.get("Contents", []))
 
     return objects
 
 
-def discover_builds(objects, folder):
+def discover_builds(bucket, folder, objects):
     builds = defaultdict(
         lambda: {
             "date": None,
@@ -146,7 +149,7 @@ def choose_builds_to_keep(builds):
     return keep
 
 
-def delete_old_builds(builds, keep, dry_run):
+def delete_old_builds(bucket, folder, builds, keep, dry_run):
     objects_to_delete = []
 
     for build_id, info in builds.items():
@@ -158,53 +161,101 @@ def delete_old_builds(builds, keep, dry_run):
 
     if not objects_to_delete:
         print("Nothing to delete")
-        return
+        return False
 
     print(f"Deleting {len(objects_to_delete)} objects")
 
     if dry_run:
         for obj in objects_to_delete:
             print("DELETE", obj)
-        return
+        return True
 
     for obj in objects_to_delete:
         print(f"Deleting {obj}")
-        s3.delete_object(Bucket=BUCKET, Key=obj)
+        s3.delete_object(Bucket=bucket, Key=obj)
+
+    return True
 
 
-def update_sha256sums(to_keep, dry_run):
-    obj = s3.get_object(
-        Bucket=BUCKET,
-        Key=f"{PREFIX}/SHA256SUMS",
-    )
+def update_sha256sums(bucket, folder, to_keep, keyid, dry_run):
+    with tempfile.TemporaryDirectory() as tmpdir:
 
-    sha256sums = obj["Body"].read().decode("utf-8")
-    keep = []
+        s3.download_file(bucket, f"{folder}/SHA256SUMS", f"{tmpdir}/SHA256SUMS.old")
 
-    for line in sha256sums.splitlines():
-        m = BUILD_RE.search(line)
-        # Other files that might be in the index
-        if not m:
-            keep.append(line)
-            continue
+        s3.download_file(
+            bucket, f"{folder}/SHA256SUMS.gpg", f"{tmpdir}/SHA256SUMS.old.gpg"
+        )
 
-        build_id = m.group(1)
-        if build_id in to_keep:
-            keep.append(line)
+        try:
+            subprocess.run(
+                [
+                    "gpg",
+                    "--verify",
+                    f"{tmpdir}/SHA256SUMS.old.gpg",
+                    f"{tmpdir}/SHA256SUMS.old",
+                ],
+                check=True,
+            )
+        except subprocess.CalledProcessError:
+            print("Failed to verify SHA256SUMS signature", file=sys.stderr)
+            return 1
 
-    new_sha256sums = "\n".join(keep) + "\n"
+        sha256sums = open(f"{tmpdir}/SHA256SUMS.old").read()
+        keep = []
 
-    if dry_run:
-        print("\nNew SHA256SUMS:")
-        print(f"{new_sha256sums}")
-        return
+        for line in sha256sums.splitlines():
+            m = BUILD_RE.search(line)
+            # Other files that might be in the index
+            if not m:
+                keep.append(line)
+                continue
 
-    s3.put_object(
-        Bucket=BUCKET,
-        Key=f"{PREFIX}SHA256SUMS",
-        Body=new_sha256sums.encode("utf-8"),
-        ContentType="text/plain",
-    )
+            build_id = m.group(1)
+            if build_id in to_keep:
+                keep.append(line)
+
+        new_sha256sums = "\n".join(keep) + "\n"
+
+        with open(f"{tmpdir}/SHA256SUMS", "w") as out:
+            out.write(new_sha256sums)
+
+        try:
+            subprocess.run(
+                [
+                    "gpg",
+                    "--sign",
+                    f"--default-key={keyid}",
+                    "--detach-sign",
+                    "--armor",
+                    "-o",
+                    f"{tmpdir}/SHA256SUMS.gpg",
+                    f"{tmpdir}/SHA256SUMS",
+                ],
+                check=True,
+            )
+        except subprocess.CalledProcessError:
+            print("Failed to sign SHA256SUMS", file=sys.stderr)
+            return 1
+
+        if dry_run:
+            print("\nNew SHA256SUMS:")
+            print(f"{new_sha256sums}")
+            return 0
+
+        print("Uploading new checksum files")
+        s3.upload_file(f"{tmpdir}/SHA256SUMS", bucket, f"{folder}/SHA256SUMS")
+        s3.upload_file(f"{tmpdir}/SHA256SUMS.gpg", bucket, f"{folder}/SHA256SUMS.gpg")
+
+        # TODO: Current systemd looks at SHA256SUMS.sha256.asc. Recheck with
+        # 261 and file issue if still present
+        copy_source = {"Bucket": bucket, "Key": f"{folder}/SHA256SUMS.gpg"}
+
+        s3.copy_object(
+            Bucket=bucket, CopySource=copy_source, Key=f"{folder}/SHA256SUMS.sha256.asc"
+        )
+
+        print("Cleanup done.")
+        return 0
 
 
 def main():
@@ -243,8 +294,13 @@ def main():
         print("No AWS_SECRET_ACCESS_KEY")
         return 1
 
-    objects = list_objects()
-    builds = discover_builds(objects, args.folder)
+    keyid = os.getenv("BENGALOS_SIGNING_KEY")
+    if keyid is None:
+        print("No BENGALOS_SIGNING_KEY")
+        return 1
+
+    objects = list_objects(args.bucket, args.folder)
+    builds = discover_builds(args.bucket, args.folder, objects)
     keep = choose_builds_to_keep(builds)
 
     print("Keeping builds:")
@@ -252,8 +308,13 @@ def main():
         print(" ", build_id)
 
     print()
-    delete_old_builds(builds, keep, args.dry_run)
-    update_sha256sums(keep, args.dry_run)
+    deleted = delete_old_builds(args.bucket, args.folder, builds, keep, args.dry_run)
+    if deleted:
+        ret = update_sha256sums(args.bucket, args.folder, keep, keyid, args.dry_run)
+    else:
+        ret = 0
+
+    return ret
 
 
 if __name__ == "__main__":
