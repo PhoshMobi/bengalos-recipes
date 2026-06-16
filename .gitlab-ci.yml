@@ -158,7 +158,7 @@ lint:
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
 
-.cleanup-blessed:
+cleanup-blessed:
   stage: cleanup
   tags: ["phosh-images"]
   resource_group: phoshimages

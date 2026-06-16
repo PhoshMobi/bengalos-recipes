@@ -246,8 +246,8 @@ def update_sha256sums(bucket, folder, to_keep, keyid, dry_run):
         s3.upload_file(f"{tmpdir}/SHA256SUMS", bucket, f"{folder}/SHA256SUMS")
         s3.upload_file(f"{tmpdir}/SHA256SUMS.gpg", bucket, f"{folder}/SHA256SUMS.gpg")
 
-        # TODO: Current systemd looks at SHA256SUMS.sha256.asc. Recheck with
-        # 261 and file issue if still present
+        # TODO: Current systemd looks at SHA256SUMS.sha256.asc.
+        # Recheck with systemd 261 and file issue if still present
         copy_source = {"Bucket": bucket, "Key": f"{folder}/SHA256SUMS.gpg"}
 
         s3.copy_object(
