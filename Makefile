@@ -1,44 +1,34 @@
-ARCH=amd64
-VARIANT=development
+ARCH ?= amd64
+FLAVOR ?= development
 IMAGE_UPLOAD_OPTS=--verbose
 
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1133276
 # workaround for broken mkosi/26-2 in sid and forky
 export PATH := $(addsuffix :/usr/sbin,$(PATH))
 
-bengalos-amd64-development: build-amd64-development/.done
+bengalos: build-${ARCH}-${FLAVOR}/.done
 
-build-amd64-development/.done:
-	./bengalos-builder.py build-amd64-development/
-	mkosi -C build-amd64-development -B -i \
+bengalos-amd64-immutable:
+	$(MAKE) ARCH=amd64 FLAVOR=immutable bengalos
+
+bengalos-amd64-development:
+	$(MAKE) ARCH=amd64 FLAVOR=development bengalos
+
+build-${ARCH}-${FLAVOR}/.prep:
+	./bengalos-builder.py build-${ARCH}-${FLAVOR}/
+	touch build-${ARCH}-${FLAVOR}/.prep
+
+build-${ARCH}-${FLAVOR}/.done: build-${ARCH}-${FLAVOR}/.prep
+	mkosi -C build-${ARCH}-${FLAVOR} -B -i \
 	  --hostname phosh \
-		--profile image-development,device-amd64,zram,phosh
-	touch build-amd64-development/.done
+		--profile image-${FLAVOR},device-${ARCH},zram,phosh
+	touch build-${ARCH}-${FLAVOR}/.done
 
-bengalos-amd64-development-run: build-amd64-development/.done
-	mkosi -C build-amd64-development -i \
+bengalos-run: build-${ARCH}-${FLAVOR}/.done
+	mkosi -C build-${ARCH}-${FLAVOR} -i \
 		--hostname phosh \
-		--profile image-development,device-amd64,zram,phosh \
+		--profile image-${FLAVOR},device-${ARCH},zram,phosh \
 		vm
-
-bengalos-amd64-immutable: build-amd64-immutable/.done
-
-build-amd64-immutable/.prep:
-	./bengalos-builder.py build-amd64-immutable/
-	touch build-amd64-immutable/.prep
-
-build-amd64-immutable/.done: build-amd64-immutable/.prep
-	mkosi -C build-amd64-immutable -B -i \
-		--hostname phosh \
-		--profile image-immutable,device-amd64,zram,phosh
-	touch build-amd64-immutable/.done
-
-bengalos-amd64-immutable-run: build-amd64-immutable/.done
-	mkosi -C build-amd64-immutable -i \
-		--hostname phosh \
-		--profile image-immutable,device-amd64,zram,phosh \
-		vm
-
 
 deps:
 	sudo apt install mkosi virtinst
@@ -55,13 +45,12 @@ lint: pylint shellcheck
 	mdl -s .mdl.rb -g *.md docs/*.md
 
 clean:
-	rm -rf build-amd64-development/
-	rm -rf build-amd64-immutable/
+	rm -rf build-${ARCH}-${FLAVOR}/
 
 upload:
-	xz -zk build-${ARCH}-${VARIANT}/BengalOS_0.0.20??????.?.raw
+	xz -zk build-${ARCH}-${FLAVOR}/BengalOS_0.0.20??????.?.raw
 	rsync ${IMAGE_UPLOAD_OPTS} \
-		build-${ARCH}-${VARIANT}/BengalOS_0.0.20??????.?.raw.xz \
+		build-${ARCH}-${FLAVOR}/BengalOS_0.0.20??????.?.raw.xz \
 		"${IMAGE_HOST}:"
 
 .PHONY: upload pylint deps clean

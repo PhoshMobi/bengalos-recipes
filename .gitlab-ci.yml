@@ -48,15 +48,15 @@ build:dev:nightly:amd64:
   resource_group: phoshimages
   variables:
     ARCH: amd64
-    VARIANT: development
+    FLAVOR: development
   script:
-    - XDG_CACHE_HOME=~/.cache make clean bengalos-${ARCH}-${VARIANT}
+    - XDG_CACHE_HOME=~/.cache make clean bengalos
     - |
       if [ -n "${PHOSH_IMAGE_HOST}" ] && \
          [ -n "${PHOSH_IMAGE_UPLOAD}" ] && \
          [ "${CI_COMMIT_BRANCH}" = "${PHOSH_IMAGE_BRANCH}" ]; then
-        ls -lh build-${ARCH}-${VARIANT}/BengalOS_*
-        time make ARCH="${ARCH}" VARIANT=development IMAGE_HOST="${PHOSH_IMAGE_HOST}" upload
+        ls -lh build-${ARCH}-${FLAVOR}/BengalOS_*
+        time make IMAGE_HOST="${PHOSH_IMAGE_HOST}" upload
       else
         echo "Skipping upload on ${CI_COMMIT_BRANCH}."
       fi
@@ -67,7 +67,7 @@ build:immutable:nightly:amd64:
   resource_group: phoshimages
   variables:
     ARCH: amd64
-    VARIANT: immutable
+    FLAVOR: immutable
     AWS_ACCESS_KEY_ID: $PUSH_KEY
     AWS_SECRET_ACCESS_KEY: $PUSH_SECRET
     MKOSI_SECURE_BOOT_CRT: $SECURE_BOOT_CRT
@@ -78,15 +78,15 @@ build:immutable:nightly:amd64:
   script:
     - |
       XDG_CACHE_HOME=~/.cache make clean
-      mkdir -p build-${ARCH}-${VARIANT}
+      mkdir -p build-${ARCH}-${FLAVOR}
       # Secure boot certificate
-      echo "$MKOSI_SECURE_BOOT_CRT" > build-${ARCH}-${VARIANT}/mkosi.crt
-      openssl x509 -in "build-${ARCH}-${VARIANT}/mkosi.crt" -noout -text
+      echo "$MKOSI_SECURE_BOOT_CRT" > build-${ARCH}-${FLAVOR}/mkosi.crt
+      openssl x509 -in "build-${ARCH}-${FLAVOR}/mkosi.crt" -noout -text
       # Secure boot signing key
       UMASK=$(umask) && umask 077
-      echo "$MKOSI_SECURE_BOOT_KEY" | base64 -d > build-${ARCH}-${VARIANT}/mkosi.key
+      echo "$MKOSI_SECURE_BOOT_KEY" | base64 -d > build-${ARCH}-${FLAVOR}/mkosi.key
       umask ${UMASK}
-      XDG_CACHE_HOME=~/.cache make bengalos-${ARCH}-${VARIANT}
+      XDG_CACHE_HOME=~/.cache make bengalos
     - |
       if [ -n "$AWS_ENDPOINT_URL" ]; then
         time ./helpers/pack.sh
