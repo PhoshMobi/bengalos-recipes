@@ -156,10 +156,6 @@ lint:
     - make lint
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      changes:
-        paths:
-          - "*.md"
-          - "docs/*.md"
 
 .cleanup-blessed:
   stage: cleanup

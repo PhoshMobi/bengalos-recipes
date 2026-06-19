@@ -33,16 +33,16 @@ while [ -n "$1" ]; do
         exit 0
         ;;
     -H|--hash)
-	shift
-	HASH=$1
+        shift
+        HASH=$1
         ;;
     -o|--output-dir)
-	shift
-	OUTPUT_DIR=$1
+        shift
+        OUTPUT_DIR=$1
         ;;
     *)
-	help
-	exit 1
+        help
+        exit 1
   esac
   shift
 done
