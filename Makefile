@@ -39,7 +39,7 @@ pylint:
 	flake8 *.py
 
 shellcheck:
-	shellcheck helpers/get-qcow2.sh
+	shellcheck helpers/*.sh
 
 lint: pylint shellcheck
 	mdl -s .mdl.rb -g *.md docs/*.md
