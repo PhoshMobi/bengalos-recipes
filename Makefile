@@ -42,7 +42,7 @@ shellcheck:
 	shellcheck helpers/*.sh
 
 lint: pylint shellcheck
-	if git --no-pager grep -I "	" -- ':(exclude)Makefile'; then \
+	@if git --no-pager grep -I "	" -- ':(exclude)Makefile'; then \
 		echo "Code contains tabs, please fix"; \
 		exit 1; \
 	fi
