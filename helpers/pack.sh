@@ -48,18 +48,18 @@ while [ -n "$1" ]; do
         exit 0
         ;;
     -d|--device)
-	shift
-	DEVICE=$1
+        shift
+        DEVICE=$1
         ;;
     -U|--upload-only)
-	UPLOAD_ONLY=1
-	;;
+        UPLOAD_ONLY=1
+        ;;
     -P|--pack-only)
-	PACK_ONLY=1
-	;;
+        PACK_ONLY=1
+        ;;
     *)
-	help
-	exit 1
+        help
+        exit 1
   esac
   shift
 done

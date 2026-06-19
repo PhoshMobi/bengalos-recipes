@@ -51,12 +51,12 @@ while [ -n "$1" ]; do
         exit 0
         ;;
     -H|--hash)
-	shift
-	HASH=$1
+        shift
+        HASH=$1
         ;;
     *)
-	help
-	exit 1
+        help
+        exit 1
   esac
   shift
 done
@@ -85,9 +85,9 @@ function bless()
 
   for file in "${sha256sums}" "${sha256sums}.gpg"; do
       aws s3 cp \
-	  "s3://${STAGING_BUCKET}/${STAGING_PREFIX}/${HASH}/${file}" \
-	  "${TMPDIR}/${file}" \
-	  --only-show-errors
+          "s3://${STAGING_BUCKET}/${STAGING_PREFIX}/${HASH}/${file}" \
+          "${TMPDIR}/${file}" \
+          --only-show-errors
   done
 
   echo "🔐 Verifying checksum file integrity…"

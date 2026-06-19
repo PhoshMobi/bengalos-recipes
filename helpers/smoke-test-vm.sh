@@ -50,20 +50,20 @@ while [ -n "$1" ]; do
         exit 0
         ;;
     -n|--name)
-	shift
-	NAME=$1
+        shift
+        NAME=$1
         ;;
     -d|--disk)
-	shift
-	DISK=$1
+        shift
+        DISK=$1
         ;;
     -t|--timeout)
-	shift
-	TIMEOUT=$1
+        shift
+        TIMEOUT=$1
         ;;
     *)
-	help
-	exit 1
+        help
+        exit 1
   esac
   shift
 done
@@ -85,7 +85,7 @@ function build_vm()
         --serial pty \
         --boot uefi,firmware.feature0.name=secure-boot,firmware.feature0.enabled=yes,firmware.feature1.name=enrolled-keys,firmware.feature1.enabled=no \
         --disk "$DISK,format=qcow2" \
-	--vsock cid.auto=yes
+        --vsock cid.auto=yes
 }
 
 wait_for_vm()
