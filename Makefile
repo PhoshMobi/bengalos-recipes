@@ -21,7 +21,8 @@ build-${ARCH}-${FLAVOR}/.prep:
 build-${ARCH}-${FLAVOR}/.done: build-${ARCH}-${FLAVOR}/.prep
 	mkosi -C build-${ARCH}-${FLAVOR} -B -i \
 	  --hostname phosh \
-		--profile image-${FLAVOR},device-${ARCH},zram,phosh
+		--profile image-${FLAVOR},device-${ARCH},zram,phosh \
+		${MKOSI_OPTS}
 	touch build-${ARCH}-${FLAVOR}/.done
 
 bengalos-run: build-${ARCH}-${FLAVOR}/.done
