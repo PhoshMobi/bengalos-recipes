@@ -14,8 +14,6 @@ STAGING_BUCKET=bengalos-staging
 STAGING_PREFIX=staging
 BLESSED_BUCKET=bengalos-images
 TMPDIR="$(mktemp -d)"
-# TODO: get from metainfo
-ARCH=x86-64
 SIGNING_KEY="${BENGALOS_SIGNING_KEY}"
 
 function cleanup()
@@ -114,12 +112,25 @@ function bless()
   . "${TMPDIR}/${osrelease}"
 
   if [ -z "${VARIANT_ID}" ]; then
-      echo "No VARIANT_ID in metainfo"
+      echo "No VARIANT_ID in osrelease"
       exit 1
   fi
 
   if [ -z "${VERSION_CODENAME}" ]; then
-      echo "No VERSION_CODENAME in metainfo"
+      echo "No VERSION_CODENAME in osrelease"
+      exit 1
+  fi
+
+  # Get architecture
+  manifest=$(awk '/.manifest/ { print $2 }' "${TMPDIR}/${sha256sums}")
+  aws s3 cp \
+      "s3://${STAGING_BUCKET}/${STAGING_PREFIX}/${HASH}/${manifest}" \
+      "${TMPDIR}/${manifest}" \
+      --only-show-errors
+  ARCH=$(jq -r  '.config | .architecture' "${TMPDIR}/${manifest}")
+
+  if [ -z "${ARCH}" ]; then
+      echo "No ARCH in manifest"
       exit 1
   fi
 
