@@ -40,7 +40,7 @@ Usage: $0 [-h|--hash hash]
 
 Bless an immutable image
 
-  --hash:             The manifests's hash of the to bless images
+  --hash:             The hash of the to be blessed images's checksum file
 EOF
 }
 
@@ -127,7 +127,7 @@ function bless()
 
   echo "📦 Publishing artifacts to blessed bucket…"
 
-  # Copy each artifact listed in checksum file
+  # Copy each artifact listed in the checksum file
   awk '{ print $2 }' "${TMPDIR}/${sha256sums}" | while IFS= read -r file; do
       echo "  → ${file}"
 
