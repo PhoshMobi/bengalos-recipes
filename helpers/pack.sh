@@ -89,6 +89,7 @@ function pack() {
     mv "${compressed}.temp" "${compressed}"
   done
   cp "BengalOS_${VERSION}.osrelease" "${VERSION}"
+  cp "BengalOS_${VERSION}.manifest" "${VERSION}"
 }
 
 function sign() {
