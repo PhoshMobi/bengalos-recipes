@@ -13,6 +13,7 @@ TOPLEVEL=${PWD}
 STAGING_BUCKET=bengalos-staging
 STAGING_PREFIX=staging
 BLESSED_BUCKET=bengalos-images
+DRY_RUN=0
 TMPDIR="$(mktemp -d)"
 SIGNING_KEY="${BENGALOS_SIGNING_KEY}"
 
@@ -34,11 +35,12 @@ trap err ERR
 function help()
 {
     cat <<EOF
-Usage: $0 [-h|--hash hash]
+Usage: $0 [--dry-run] [-h|--hash hash]
 
 Bless an immutable image
 
-  --hash:             The hash of the to be blessed images's checksum file
+  --hash:    The hash of the to be blessed images's checksum file
+  --dry-run: Don't bless anything, just print what would be blessed
 EOF
 }
 
@@ -51,6 +53,9 @@ while [ -n "$1" ]; do
     -H|--hash)
         shift
         HASH=$1
+        ;;
+    --dry-run)
+        DRY_RUN=1
         ;;
     *)
         help
@@ -135,6 +140,11 @@ function bless()
   fi
 
   blessed_prefix="${VERSION_CODENAME}/${ARCH}/${VARIANT_ID}"
+
+  if [ $DRY_RUN -ne 0 ]; then
+      echo "Would bless ${HASH} to ${blessed_prefix}"
+      return
+  fi
 
   echo "📦 Publishing artifacts to blessed bucket…"
 
