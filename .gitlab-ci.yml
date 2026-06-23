@@ -115,6 +115,7 @@ test:immutable:nightly:amd64:
       time ./helpers/get-qcow2.sh --hash "${HASH}"
       helpers/smoke-test-vm.sh --name "${HASH}" --disk *.qcow2
   artifacts:
+    when: always
     paths:
       - build-amd64-immutable/*/hash
       - "smoke-*.png"
