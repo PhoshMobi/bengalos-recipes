@@ -165,7 +165,12 @@ cleanup-blessed:
   variables:
     AWS_ACCESS_KEY_ID: $BLESS_KEY
     AWS_SECRET_ACCESS_KEY: $BLESS_SECRET
+    BENGALOS_SIGNING_KEY: $SIGNING_KEY_ID
+  before_script:
+    - *import_gpg_key
   script:
     - helpers/cleanup-blessed-builds.py --folder roaming/x86-64/qemu
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+  after_script:
+    - *clear_gpg_key
