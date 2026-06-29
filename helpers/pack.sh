@@ -101,7 +101,7 @@ function sign() {
   cd "${VERSION}"
   checksums="${VERSION}.SHA256SUMS"
   signature="${VERSION}.SHA256SUMS.gpg"
-  sha256sum BengalOS_*.xz BengalOS_*.osrelease > "${checksums}.tmp"
+  sha256sum BengalOS_*.xz BengalOS_*.osrelease BengalOS_*.manifest > "${checksums}.tmp"
   mv "${checksums}.tmp" "${checksums}"
   gpg --sign --default-key="${SIGNING_KEY}" --detach-sign --armor -o "${signature}" "${checksums}"
   ln -sf "${checksums}" SHA256SUMS

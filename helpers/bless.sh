@@ -13,9 +13,8 @@ TOPLEVEL=${PWD}
 STAGING_BUCKET=bengalos-staging
 STAGING_PREFIX=staging
 BLESSED_BUCKET=bengalos-images
+DRY_RUN=0
 TMPDIR="$(mktemp -d)"
-# TODO: get from metainfo
-ARCH=x86-64
 SIGNING_KEY="${BENGALOS_SIGNING_KEY}"
 
 function cleanup()
@@ -36,11 +35,12 @@ trap err ERR
 function help()
 {
     cat <<EOF
-Usage: $0 [-h|--hash hash]
+Usage: $0 [--dry-run] [-h|--hash hash]
 
 Bless an immutable image
 
-  --hash:             The manifests's hash of the to bless images
+  --hash:    The hash of the to be blessed images's checksum file
+  --dry-run: Don't bless anything, just print what would be blessed
 EOF
 }
 
@@ -53,6 +53,9 @@ while [ -n "$1" ]; do
     -H|--hash)
         shift
         HASH=$1
+        ;;
+    --dry-run)
+        DRY_RUN=1
         ;;
     *)
         help
@@ -114,20 +117,38 @@ function bless()
   . "${TMPDIR}/${osrelease}"
 
   if [ -z "${VARIANT_ID}" ]; then
-      echo "No VARIANT_ID in metainfo"
+      echo "No VARIANT_ID in osrelease"
       exit 1
   fi
 
   if [ -z "${VERSION_CODENAME}" ]; then
-      echo "No VERSION_CODENAME in metainfo"
+      echo "No VERSION_CODENAME in osrelease"
+      exit 1
+  fi
+
+  # Get architecture
+  manifest=$(awk '/.manifest/ { print $2 }' "${TMPDIR}/${sha256sums}")
+  aws s3 cp \
+      "s3://${STAGING_BUCKET}/${STAGING_PREFIX}/${HASH}/${manifest}" \
+      "${TMPDIR}/${manifest}" \
+      --only-show-errors
+  ARCH=$(jq -r  '.config | .architecture' "${TMPDIR}/${manifest}")
+
+  if [ -z "${ARCH}" ]; then
+      echo "No ARCH in manifest"
       exit 1
   fi
 
   blessed_prefix="${VERSION_CODENAME}/${ARCH}/${VARIANT_ID}"
 
+  if [ $DRY_RUN -ne 0 ]; then
+      echo "Would bless ${HASH} to ${blessed_prefix}"
+      return
+  fi
+
   echo "📦 Publishing artifacts to blessed bucket…"
 
-  # Copy each artifact listed in checksum file
+  # Copy each artifact listed in the checksum file
   awk '{ print $2 }' "${TMPDIR}/${sha256sums}" | while IFS= read -r file; do
       echo "  → ${file}"
 
