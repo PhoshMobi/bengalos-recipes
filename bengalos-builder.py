@@ -37,7 +37,7 @@ def configure_dir(dir_path: pathlib.Path, options: dict[str, str]):
 def configure_version(dir_path: pathlib.Path, version: str):
     if not version:
         date = datetime.datetime.today().strftime("%Y%m%d")
-        version = f"0.0.{date}.0"
+        version = f"0.{date[2:4]}.{date[4:]}.0"
     filename = dir_path / "mkosi.version"
     print(f"Setting {filename} to {version}")
     with open(filename, "w+") as f:
