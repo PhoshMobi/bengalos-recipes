@@ -1,5 +1,0 @@
-#!/bin/sh
-
-set -e
-
-echo "VARIANT_ID=qemu" >> /usr/lib/os-release
