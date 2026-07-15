@@ -106,6 +106,12 @@ build:immutable:nightly:amd64:
     DEVICE: amd64
 
 
+build:immutable:nightly:sdm670:
+  extends: .build:immutable:nightly
+  variables:
+    DEVICE: sdm670
+
+
 test:immutable:nightly:amd64:
   stage: test
   tags: ["phosh-images"]
