@@ -95,7 +95,7 @@ build:immutable:nightly:amd64:
       fi
   after_script:
     - *clear_gpg_key
-    - rm -f build-${ARCH}-${VARIANT}/mkosi.key
+    - rm -f build-${ARCH}-${FLAVOR}/mkosi.key
   artifacts:
     paths:
       - build-amd64-immutable/*/hash
@@ -140,7 +140,7 @@ publish:immutable:nightly:amd64:
       helpers/bless.sh --hash "${HASH}"
   after_script:
     - *clear_gpg_key
-    - rm -f build-${ARCH}-${VARIANT}/mkosi.key
+    - rm -f build-${ARCH}-${FLAVOR}/mkosi.key
   artifacts:
     paths:
       - build-amd64-immutable/*/hash
