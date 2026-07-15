@@ -61,12 +61,11 @@ build:dev:nightly:amd64:
         echo "Skipping upload on ${CI_COMMIT_BRANCH}."
       fi
 
-build:immutable:nightly:amd64:
+.build:immutable:nightly:
   stage: build
   tags: ["phosh-images"]
   resource_group: phoshimages
   variables:
-    DEVICE: amd64
     FLAVOR: immutable
     AWS_ACCESS_KEY_ID: $PUSH_KEY
     AWS_SECRET_ACCESS_KEY: $PUSH_SECRET
@@ -99,6 +98,13 @@ build:immutable:nightly:amd64:
   artifacts:
     paths:
       - build-amd64-immutable/*/hash
+
+
+build:immutable:nightly:amd64:
+  extends: .build:immutable:nightly
+  variables:
+    DEVICE: amd64
+
 
 test:immutable:nightly:amd64:
   stage: test
