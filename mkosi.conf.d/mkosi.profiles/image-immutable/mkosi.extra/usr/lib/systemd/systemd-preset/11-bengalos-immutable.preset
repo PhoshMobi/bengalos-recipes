@@ -1,3 +1,12 @@
 # No point in running timer for the package manager
 disable apt-daily-upgrade.*
 disable apt-daily.*
+
+# Disable avahi, we have systemd resolved and avahi fails to
+# start due to the missing avahi user
+disable avahi-daemon.*
+
+# Disable automatic updates as we don't want them to happen on
+# e.g. mobile data
+disable systemd-sysupdate.*
+disable systemd-sysupdate-reboot.*
