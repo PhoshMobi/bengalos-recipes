@@ -47,7 +47,7 @@ build:dev:nightly:amd64:
   tags: ["phosh-images"]
   resource_group: phoshimages
   variables:
-    ARCH: amd64
+    DEVICE: amd64
     FLAVOR: development
   script:
     - XDG_CACHE_HOME=~/.cache make clean bengalos
@@ -55,7 +55,7 @@ build:dev:nightly:amd64:
       if [ -n "${PHOSH_IMAGE_HOST}" ] && \
          [ -n "${PHOSH_IMAGE_UPLOAD}" ] && \
          [ "${CI_COMMIT_BRANCH}" = "${PHOSH_IMAGE_BRANCH}" ]; then
-        ls -lh build-${ARCH}-${FLAVOR}/BengalOS_*
+        ls -lh build-${DEVICE}-${FLAVOR}/BengalOS_*
         time make IMAGE_HOST="${PHOSH_IMAGE_HOST}" upload
       else
         echo "Skipping upload on ${CI_COMMIT_BRANCH}."
@@ -66,7 +66,7 @@ build:immutable:nightly:amd64:
   tags: ["phosh-images"]
   resource_group: phoshimages
   variables:
-    ARCH: amd64
+    DEVICE: amd64
     FLAVOR: immutable
     AWS_ACCESS_KEY_ID: $PUSH_KEY
     AWS_SECRET_ACCESS_KEY: $PUSH_SECRET
@@ -78,13 +78,13 @@ build:immutable:nightly:amd64:
   script:
     - |
       XDG_CACHE_HOME=~/.cache make clean
-      mkdir -p build-${ARCH}-${FLAVOR}
+      mkdir -p build-${DEVICE}-${FLAVOR}
       # Secure boot certificate
-      echo "$MKOSI_SECURE_BOOT_CRT" > build-${ARCH}-${FLAVOR}/mkosi.crt
-      openssl x509 -in "build-${ARCH}-${FLAVOR}/mkosi.crt" -noout -text
+      echo "$MKOSI_SECURE_BOOT_CRT" > build-${DEVICE}-${FLAVOR}/mkosi.crt
+      openssl x509 -in "build-${DEVICE}-${FLAVOR}/mkosi.crt" -noout -text
       # Secure boot signing key
       UMASK=$(umask) && umask 077
-      echo "$MKOSI_SECURE_BOOT_KEY" | base64 -d > build-${ARCH}-${FLAVOR}/mkosi.key
+      echo "$MKOSI_SECURE_BOOT_KEY" | base64 -d > build-${DEVICE}-${FLAVOR}/mkosi.key
       umask ${UMASK}
       XDG_CACHE_HOME=~/.cache make bengalos
     - |
@@ -95,7 +95,7 @@ build:immutable:nightly:amd64:
       fi
   after_script:
     - *clear_gpg_key
-    - rm -f build-${ARCH}-${FLAVOR}/mkosi.key
+    - rm -f build-${DEVICE}-${FLAVOR}/mkosi.key
   artifacts:
     paths:
       - build-amd64-immutable/*/hash
@@ -140,7 +140,7 @@ publish:immutable:nightly:amd64:
       helpers/bless.sh --hash "${HASH}"
   after_script:
     - *clear_gpg_key
-    - rm -f build-${ARCH}-${FLAVOR}/mkosi.key
+    - rm -f build-${DEVICE}-${FLAVOR}/mkosi.key
   artifacts:
     paths:
       - build-amd64-immutable/*/hash
