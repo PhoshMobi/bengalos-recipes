@@ -97,7 +97,7 @@ build:dev:nightly:amd64:
     - rm -f build-${DEVICE}-${FLAVOR}/mkosi.key
   artifacts:
     paths:
-      - build-amd64-immutable/*/hash
+      - build-${DEVICE}-immutable/*/hash
 
 
 build:immutable:nightly:amd64:
