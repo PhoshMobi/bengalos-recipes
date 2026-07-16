@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -e
+
+if [ -z "${BOS_DEVICE}" ]; then
+        echo "No device type set via BOS_DEVICE" >&2
+        exit 1
+fi
+
+echo "VARIANT_ID=${BOS_DEVICE}" >> /usr/lib/os-release

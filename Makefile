@@ -1,4 +1,4 @@
-ARCH ?= amd64
+DEVICE ?= amd64
 FLAVOR ?= development
 IMAGE_UPLOAD_OPTS=--verbose
 
@@ -6,29 +6,29 @@ IMAGE_UPLOAD_OPTS=--verbose
 # workaround for broken mkosi/26-2 in sid and forky
 export PATH := $(addsuffix :/usr/sbin,$(PATH))
 
-bengalos: build-${ARCH}-${FLAVOR}/.done
+bengalos: build-${DEVICE}-${FLAVOR}/.done
 
 bengalos-amd64-immutable:
-	$(MAKE) ARCH=amd64 FLAVOR=immutable bengalos
+	$(MAKE) DEVICE=amd64 FLAVOR=immutable bengalos
 
 bengalos-amd64-development:
-	$(MAKE) ARCH=amd64 FLAVOR=development bengalos
+	$(MAKE) DEVICE=amd64 FLAVOR=development bengalos
 
-build-${ARCH}-${FLAVOR}/.prep:
-	./bengalos-builder.py build-${ARCH}-${FLAVOR}/
-	touch build-${ARCH}-${FLAVOR}/.prep
+build-${DEVICE}-${FLAVOR}/.prep:
+	./bengalos-builder.py build-${DEVICE}-${FLAVOR}/
+	touch build-${DEVICE}-${FLAVOR}/.prep
 
-build-${ARCH}-${FLAVOR}/.done: build-${ARCH}-${FLAVOR}/.prep
-	mkosi -C build-${ARCH}-${FLAVOR} -B -i \
+build-${DEVICE}-${FLAVOR}/.done: build-${DEVICE}-${FLAVOR}/.prep
+	mkosi -C build-${DEVICE}-${FLAVOR} -B -i \
 	  --hostname phosh \
-		--profile image-${FLAVOR},device-${ARCH},zram,phosh \
+		--profile image-${FLAVOR},device-${DEVICE},zram,phosh \
 		${MKOSI_OPTS}
-	touch build-${ARCH}-${FLAVOR}/.done
+	touch build-${DEVICE}-${FLAVOR}/.done
 
-bengalos-run: build-${ARCH}-${FLAVOR}/.done
-	mkosi -C build-${ARCH}-${FLAVOR} -i \
+bengalos-run: build-${DEVICE}-${FLAVOR}/.done
+	mkosi -C build-${DEVICE}-${FLAVOR} -i \
 		--hostname phosh \
-		--profile image-${FLAVOR},device-${ARCH},zram,phosh \
+		--profile image-${FLAVOR},device-${DEVICE},zram,phosh \
 		vm
 
 deps:
@@ -50,12 +50,12 @@ lint: pylint shellcheck
 	mdl -s .mdl.rb -g *.md docs/*.md
 
 clean:
-	rm -rf build-${ARCH}-${FLAVOR}/
+	rm -rf build-${DEVICE}-${FLAVOR}/
 
 upload:
-	xz -zk build-${ARCH}-${FLAVOR}/BengalOS_0.0.20??????.?.raw
+	xz -zk build-${DEVICE}-${FLAVOR}/BengalOS_0.0.20??????.?.raw
 	rsync ${IMAGE_UPLOAD_OPTS} \
-		build-${ARCH}-${FLAVOR}/BengalOS_0.0.20??????.?.raw.xz \
+		build-${DEVICE}-${FLAVOR}/BengalOS_0.0.20??????.?.raw.xz \
 		"${IMAGE_HOST}:"
 
 .PHONY: upload pylint deps clean
