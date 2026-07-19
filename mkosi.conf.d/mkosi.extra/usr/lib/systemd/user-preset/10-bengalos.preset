@@ -1,0 +1,3 @@
+# Debian enables this by default making
+# See also https://github.com/syncthing/syncthing/pull/10792
+disable syncthing.*

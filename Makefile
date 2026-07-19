@@ -11,6 +11,9 @@ bengalos: build-${DEVICE}-${FLAVOR}/.done
 bengalos-amd64-immutable:
 	$(MAKE) DEVICE=amd64 FLAVOR=immutable bengalos
 
+bengalos-sdm670-immutable:
+	$(MAKE) DEVICE=sdm670 FLAVOR=immutable bengalos
+
 bengalos-amd64-development:
 	$(MAKE) DEVICE=amd64 FLAVOR=development bengalos
 

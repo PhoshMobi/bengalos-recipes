@@ -1,7 +1,7 @@
 Types: deb
 URIs: http://deb.phosh.mobi/nightly/
 Suites: forky-nightly
-Components: main
+Components: main non-free-firmware
 Signed-By:
   -----BEGIN PGP PUBLIC KEY BLOCK-----
  

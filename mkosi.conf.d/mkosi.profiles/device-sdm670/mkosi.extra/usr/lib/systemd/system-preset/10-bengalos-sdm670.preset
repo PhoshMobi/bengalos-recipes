@@ -1,0 +1,3 @@
+# Makes boot unstable and currently not needed
+disable hexagon*
+disable rmtfs*
