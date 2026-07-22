@@ -14,6 +14,18 @@ UPLOAD_ONLY=0
 PACK_ONLY=0
 BUCKET=bengalos-staging
 SIGNING_KEY="${BENGALOS_SIGNING_KEY}"
+declare -a QCOW2_DEVICES=("amd64")
+
+function is_qcow2_arch() {
+  for dev in "${QCOW2_DEVICES[@]}"; do
+    if [[ "$dev" == "$DEVICE" ]]; then
+      return 0
+    fi
+  done
+
+  return 1
+}
+
 
 function cleanup()
 {
@@ -79,9 +91,14 @@ function prep() {
 }
 
 function pack() {
+  local img
+
   prep
 
-  for part in qcow2 usr.raw usr-verity.raw usr-verity-sig.raw efi; do
+  # In not qcow2 use the raw disk image
+  is_qcow2_arch && img=qcow2 || img=raw
+
+  for part in "${img}" usr.raw usr-verity.raw usr-verity-sig.raw efi; do
     local base="BengalOS_${VERSION}.${part}"
     local compressed="${VERSION}/BengalOS_${VERSION}.${part}.xz"
     echo "📦 Creating ${compressed}…"
@@ -128,6 +145,8 @@ function upload() {
 function mk_qcow2() {
   local raw="BengalOS_${VERSION}.raw"
   local qcow2="BengalOS_${VERSION}.qcow2"
+
+  is_qcow2_arch || return 0
 
   prep
 
