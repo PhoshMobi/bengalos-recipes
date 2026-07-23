@@ -1,3 +1,6 @@
 # Disable until boot is stable
 disable hexagon*
 disable ModemManager*
+
+# Maybe this blocks our users?
+disable systemd-nsresourced.*
