@@ -1,3 +1,6 @@
-# Makes boot unstable and currently not needed
+# Disable until boot is stable
 disable hexagon*
-disable rmtfs*
+disable ModemManager*
+
+# Maybe this blocks our users?
+disable systemd-nsresourced.*

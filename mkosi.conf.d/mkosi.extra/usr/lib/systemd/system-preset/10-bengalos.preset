@@ -4,3 +4,5 @@ disable ssh.*
 enable ssh@.service
 enable sshd-keygen.service
 
+# Disable systemd-networkd, we have NetworkManager
+disable systemd-networkd*
