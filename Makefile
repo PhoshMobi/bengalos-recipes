@@ -56,9 +56,9 @@ clean:
 	rm -rf build-${DEVICE}-${FLAVOR}/
 
 upload:
-	xz -zk build-${DEVICE}-${FLAVOR}/BengalOS_0.0.20??????.?.raw
+	xz -zk build-${DEVICE}-${FLAVOR}/BengalOS_0.??.????.?.raw
 	rsync ${IMAGE_UPLOAD_OPTS} \
-		build-${DEVICE}-${FLAVOR}/BengalOS_0.0.20??????.?.raw.xz \
+		build-${DEVICE}-${FLAVOR}/BengalOS_0.??.????.?.raw.xz \
 		"${IMAGE_HOST}:"
 
 .PHONY: upload pylint deps clean
