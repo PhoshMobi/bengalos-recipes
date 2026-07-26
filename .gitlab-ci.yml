@@ -167,6 +167,16 @@ publish:immutable:nightly:amd64:
       artifacts: true
 
 
+publish:immutable:nightly:sdm670:
+  extends: .publish:immutable:nightly
+  variables:
+    DEVICE: sdm670
+  needs:
+    # TODO: no test job for sdm670 yet :(
+    - job: build:immutable:nightly:sdm670
+      artifacts: true
+
+
 lint:
   stage: test
   needs: []
