@@ -238,6 +238,11 @@ if [ -z "$AWS_SECRET_ACCESS_KEY" ]; then
     exit 1
 fi
 
+if [ -z "${BENGALOS_SIGNING_KEY}" ] && [ "${DRY_RUN}" -eq 0 ]; then
+    echo "No signing key given".
+    exit 1
+fi
+
 if [ -z "${HASH}" ]; then
     echo "No hash given".
     exit 1
