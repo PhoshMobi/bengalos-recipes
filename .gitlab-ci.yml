@@ -132,7 +132,8 @@ test:immutable:nightly:amd64:
       - build-amd64-immutable/*/hash
       - "smoke-*.png"
 
-publish:immutable:nightly:amd64:
+
+.publish:immutable:nightly:
   stage: publish
   tags: ["phosh-images"]
   resource_group: phoshimages
@@ -140,14 +141,11 @@ publish:immutable:nightly:amd64:
     AWS_ACCESS_KEY_ID: $BLESS_KEY
     AWS_SECRET_ACCESS_KEY: $BLESS_SECRET
     BENGALOS_SIGNING_KEY: $SIGNING_KEY_ID
-  needs:
-    - job: test:immutable:nightly:amd64
-      artifacts: true
   before_script:
     - *import_gpg_key
   script:
     - |
-      HASH=$(awk '{ print $1 }' build-amd64-immutable/*/hash | head -n 1)
+      HASH=$(awk '{ print $1 }' build-${DEVICE}-immutable/*/hash | head -n 1)
       echo "Blessing ${HASH}"
       helpers/bless.sh --hash "${HASH}"
   after_script:
@@ -155,9 +153,29 @@ publish:immutable:nightly:amd64:
     - rm -f build-${DEVICE}-${FLAVOR}/mkosi.key
   artifacts:
     paths:
-      - build-amd64-immutable/*/hash
+      - build-${DEVICE}-immutable/*/hash
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PROJECT_PATH == "BengalOS-team/bengalos-recipes" && $CI_PIPELINE_SOURCE == "schedule"'
+
+
+publish:immutable:nightly:amd64:
+  extends: .publish:immutable:nightly
+  variables:
+    DEVICE: amd64
+  needs:
+    - job: test:immutable:nightly:amd64
+      artifacts: true
+
+
+publish:immutable:nightly:sdm670:
+  extends: .publish:immutable:nightly
+  variables:
+    DEVICE: sdm670
+  needs:
+    # TODO: no test job for sdm670 yet :(
+    - job: build:immutable:nightly:sdm670
+      artifacts: true
+
 
 lint:
   stage: test
