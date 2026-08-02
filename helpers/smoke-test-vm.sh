@@ -102,7 +102,7 @@ wait_for_vm()
   echo "❌ VM '$NAME' failed to boot"
 }
 
-check_vm()
+check_vm_osinfo()
 {
   local os_name os_id
 
@@ -121,7 +121,48 @@ check_vm()
 }
 
 
+check_vm_greetd()
+{
+  local pid deadline status
+
+  pid=$(
+    virsh qemu-agent-command "$NAME" \
+    '{
+      "execute":"guest-exec",
+      "arguments":{
+        "path":"/bin/sh",
+        "arg":["-c","timeout 30 sh -c '\''until systemctl is-active --quiet greetd.service; do sleep 1; done'\''"]
+      }
+    }' | jq -r '.return.pid'
+  )
+
+  echo "Got pid: $pid"
+  deadline=$(( $(date +%s) + 35 ))
+  while (( $(date +%s) < deadline )); do
+    status=$(
+        virsh qemu-agent-command "$NAME" \
+        '{"execute": "guest-exec-status", "arguments": { "pid": '"$pid"' }}'
+    )
+
+    ret="$(jq -r '.return.exitcode // empty' <<<"$status")"
+    if [ "$ret" = "0" ]; then
+      echo "Greetd is active"
+      return 0
+    elif [ -n "$ret" ]; then
+      echo "Greetd not active"
+      return 1
+    fi
+
+    sleep 0.2
+  done
+
+  echo "Checking for greetd timed out"
+  return 1
+}
+
+
 build_vm
 wait_for_vm
-check_vm
+check_vm_osinfo
+check_vm_greetd
 screenshot_vm
