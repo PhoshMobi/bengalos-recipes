@@ -104,16 +104,18 @@ wait_for_vm()
 
 check_vm()
 {
-  OS_NAME=$(virsh qemu-agent-command "$NAME" '{"execute":"guest-get-osinfo"}' | jq -r .return.name)
-  OS_ID=$(virsh qemu-agent-command "$NAME" '{"execute":"guest-get-osinfo"}' | jq -r .return.id)
+  local os_name os_id
 
-  if [ "${OS_NAME}" != "Phosh BengalOS" ]; then
-    echo "Invalid os name '${OS_NAME}'"
+  os_name=$(virsh qemu-agent-command "$NAME" '{"execute":"guest-get-osinfo"}' | jq -r .return.name)
+  os_id=$(virsh qemu-agent-command "$NAME" '{"execute":"guest-get-osinfo"}' | jq -r .return.id)
+
+  if [ "${os_name}" != "Phosh BengalOS" ]; then
+    echo "Invalid os name '${os_name}'"
     exit 1
   fi
 
-  if [ "${OS_ID}" != "bengalos" ]; then
-    echo "Invalid os id '${OS_ID}'"
+  if [ "${os_id}" != "bengalos" ]; then
+    echo "Invalid os id '${os_id}'"
     exit 1
   fi
 }
