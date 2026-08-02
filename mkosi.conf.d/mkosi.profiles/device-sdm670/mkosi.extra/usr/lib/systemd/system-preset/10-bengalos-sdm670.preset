@@ -2,5 +2,5 @@
 disable hexagon*
 disable ModemManager*
 
-# Maybe this blocks our users?
+# Blocks user lookup on first boot
 disable systemd-nsresourced.*
