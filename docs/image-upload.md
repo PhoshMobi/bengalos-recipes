@@ -52,3 +52,23 @@ This transfers the metadata and images to public S3 bucket (`bengalos-images`).
 - Contains blessed images only
 - Consumed by via `systemd-sysupate`
 - Currently no automatic cleanup
+
+### Adding a new device
+
+To add a new device:
+
+- Add the necessary `mkosi.conf.d/mkosi.profiles/device-<device>/` configuration
+- Add a `build-<device>-immutable` target to the `Makefile`
+- Add flashing information in [docs/](./)
+- Add a bug label to <https://salsa.debian.org/BengalOS-team/bengalos-recipes/-/labels>
+- Add a build job by adding it to the `build:immutable:nightly:` matrix job in
+  [.gitlab-ci.yml][gitlab-ci].
+
+Once things build and work as expected
+
+- Add a publish `publish:immutable:nightly:<device>:` job to [.gitlab-ci.yml][gitlab-ci].
+- Add a cleanup job by adding it to the `cleanup-blessed:` matrix job in
+  [.gitlab-ci.yml][gitlab-ci].
+- Add the device to <https://codeberg.org/Phosh/bengalos-site>
+
+[gitlab-ci]: ../.gitlab-ci.yml
