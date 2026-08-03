@@ -100,16 +100,12 @@ build:dev:nightly:amd64:
       - build-${DEVICE}-immutable/*/hash
 
 
-build:immutable:nightly:amd64:
+build:immutable:nightly:
   extends: .build:immutable:nightly
-  variables:
-    DEVICE: amd64
-
-
-build:immutable:nightly:sdm670:
-  extends: .build:immutable:nightly
-  variables:
-    DEVICE: sdm670
+  parallel:
+    matrix:
+      - DEVICE: amd64
+      - DEVICE: sdm670
 
 
 test:immutable:nightly:amd64:
@@ -117,8 +113,11 @@ test:immutable:nightly:amd64:
   tags: ["phosh-images"]
   resource_group: phoshimages
   needs:
-    - job: build:immutable:nightly:amd64
+    - job: build:immutable:nightly
       artifacts: true
+      parallel:
+        matrix:
+          - DEVICE: amd64
   script:
     - |
       rm -f *.qcow2
@@ -173,8 +172,11 @@ publish:immutable:nightly:sdm670:
     DEVICE: sdm670
   needs:
     # TODO: no test job for sdm670 yet :(
-    - job: build:immutable:nightly:sdm670
+    - job: build:immutable:nightly
       artifacts: true
+      parallel:
+        matrix:
+          - DEVICE: sdm670
 
 
 lint:
