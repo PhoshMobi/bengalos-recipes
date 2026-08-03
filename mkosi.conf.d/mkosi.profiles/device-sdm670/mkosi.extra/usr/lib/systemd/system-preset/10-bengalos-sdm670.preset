@@ -1,6 +1,8 @@
 # Disable until boot is stable
 disable hexagon*
-disable ModemManager*
 
 # Blocks user lookup on first boot
 disable systemd-nsresourced.*
+
+# Not needed
+disable rmtfs-dir.service
