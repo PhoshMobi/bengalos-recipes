@@ -200,7 +200,7 @@ function bless()
       "s3://${BLESSED_BUCKET}/${blessed_prefix}/SHA256SUMS.sha256.asc"
 
   # Update latest images
-  qcow2=$(awk '/.qcow2.xz/ { print $2 }' "${TMPDIR}/${sha256sums}" | head -n 1)
+  qcow2=$(awk '/\.qcow2\.xz/ { print $2 }' "${TMPDIR}/${sha256sums}" | tail -n 1)
   # Not all architectures have qcow2 images:
   if [ -n "${qcow2}" ]; then
       echo "📌 Pinning latest image…"
