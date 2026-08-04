@@ -86,7 +86,7 @@ fi
 VERSION=$(cat "$VERSION_FILE")
 
 function prep() {
-    cd "${TOPLEVEL}/build-${DEVICE}-immutable"
+    cd "${TOPLEVEL}/build-${DEVICE}-immutable/mkosi.output/"
     mkdir -p "${VERSION}"
 }
 
