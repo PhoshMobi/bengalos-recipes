@@ -100,16 +100,12 @@ build:dev:nightly:amd64:
       - build-${DEVICE}-immutable/*/hash
 
 
-build:immutable:nightly:amd64:
+build:immutable:nightly:
   extends: .build:immutable:nightly
-  variables:
-    DEVICE: amd64
-
-
-build:immutable:nightly:sdm670:
-  extends: .build:immutable:nightly
-  variables:
-    DEVICE: sdm670
+  parallel:
+    matrix:
+      - DEVICE: amd64
+      - DEVICE: sdm670
 
 
 test:immutable:nightly:amd64:
@@ -117,8 +113,11 @@ test:immutable:nightly:amd64:
   tags: ["phosh-images"]
   resource_group: phoshimages
   needs:
-    - job: build:immutable:nightly:amd64
+    - job: build:immutable:nightly
       artifacts: true
+      parallel:
+        matrix:
+          - DEVICE: amd64
   script:
     - |
       rm -f *.qcow2
@@ -173,8 +172,11 @@ publish:immutable:nightly:sdm670:
     DEVICE: sdm670
   needs:
     # TODO: no test job for sdm670 yet :(
-    - job: build:immutable:nightly:sdm670
+    - job: build:immutable:nightly
       artifacts: true
+      parallel:
+        matrix:
+          - DEVICE: sdm670
 
 
 lint:
@@ -192,6 +194,11 @@ cleanup-blessed:
   stage: cleanup
   tags: ["phosh-images"]
   resource_group: phoshimages
+  parallel:
+    matrix:
+      - CLEANUP_FOLDER:
+          - roaming/x86-64/qemu
+          - roaming/arm64/sdm670
   variables:
     AWS_ACCESS_KEY_ID: $BLESS_KEY
     AWS_SECRET_ACCESS_KEY: $BLESS_SECRET
@@ -199,7 +206,7 @@ cleanup-blessed:
   before_script:
     - *import_gpg_key
   script:
-    - helpers/cleanup-blessed-builds.py --folder roaming/x86-64/qemu
+    - helpers/cleanup-blessed-builds.py --folder "$CLEANUP_FOLDER"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
   after_script:

@@ -22,7 +22,7 @@ PREFIX = "roaming/x86-64/qemu"
 
 s3 = boto3.client("s3")
 
-BUILD_RE = re.compile(r"BengalOS_(\d+\.\d+\.(\d{8})\.\d+)")
+BUILD_RE = re.compile(r"BengalOS_(\d\.(\d{2})\.(\d{4})\.\d+)")
 
 
 def list_objects(bucket, folder):
@@ -62,7 +62,7 @@ def discover_builds(bucket, folder, objects):
         build_id = m.group(1)
 
         build_date = datetime.strptime(
-            m.group(2),
+            "20" + m.group(2) +  m.group(3),
             "%Y%m%d",
         ).replace(tzinfo=timezone.utc)
 
