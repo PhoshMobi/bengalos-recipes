@@ -96,7 +96,7 @@ function pack() {
   prep
 
   # In not qcow2 use the raw disk image
-  is_qcow2_arch && img=qcow2 || img=raw
+  is_qcow2_arch && img=qcow2 || img=img
 
   for part in "${img}" usr.raw usr-verity.raw usr-verity-sig.raw efi; do
     local base="BengalOS_${VERSION}.${part}"
