@@ -201,7 +201,8 @@ function bless()
 
   # Update latest images
   qcow2=$(awk '/\.qcow2\.xz/ { print $2 }' "${TMPDIR}/${sha256sums}" | tail -n 1)
-  raw=$(awk '/\.[0-9]\.raw.xz/ { print $2 }' "${TMPDIR}/${sha256sums}" | tail -n 1)
+  # Raw disk image
+  img=$(awk '/\.[0-9]\.img.xz/ { print $2 }' "${TMPDIR}/${sha256sums}" | tail -n 1)
   # Not all architectures have qcow2 images:
   if [ -n "${qcow2}" ]; then
       echo "📌 Pinning latest image…"
@@ -210,12 +211,12 @@ function bless()
           "s3://${BLESSED_BUCKET}/${blessed_prefix}/${qcow2}" \
           "s3://${BLESSED_BUCKET}/${blessed_prefix}/latest.qcow2.xz" \
           --only-show-errors
-  elif [ -n "${raw}" ]; then
+  elif [ -n "${img}" ]; then
       echo "📌 Pinning latest image…"
-      echo "  → ${raw}"
+      echo "  → ${img}"
       aws s3 cp \
-          "s3://${BLESSED_BUCKET}/${blessed_prefix}/${raw}" \
-          "s3://${BLESSED_BUCKET}/${blessed_prefix}/latest.raw.xz" \
+          "s3://${BLESSED_BUCKET}/${blessed_prefix}/${img}" \
+          "s3://${BLESSED_BUCKET}/${blessed_prefix}/latest.img.xz" \
           --only-show-errors
   fi
 
