@@ -171,12 +171,14 @@ publish:immutable:nightly:sdm670:
   variables:
     DEVICE: sdm670
   needs:
-    # TODO: no test job for sdm670 yet :(
+    # TODO: no test job for sdm670 yet :(…
     - job: build:immutable:nightly
       artifacts: true
       parallel:
         matrix:
           - DEVICE: sdm670
+    # … but make sure the amd64 tests succeed
+    - job: test:immutable:nightly:amd64
 
 
 lint:
