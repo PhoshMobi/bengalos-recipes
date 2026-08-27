@@ -1,6 +1,7 @@
 # No point in running timer for the package manager
 disable apt-daily-upgrade.*
 disable apt-daily.*
+disable apt-listchanges.timer
 
 # Disable avahi, we have systemd resolved and avahi fails to
 # start due to the missing avahi user
