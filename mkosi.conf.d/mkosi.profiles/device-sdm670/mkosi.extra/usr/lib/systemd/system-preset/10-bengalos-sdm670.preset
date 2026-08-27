@@ -1,5 +1,3 @@
 # Disable until boot is stable
 disable hexagon*
 
-# Blocks user lookup on first boot
-disable systemd-nsresourced.*
