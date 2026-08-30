@@ -14,6 +14,9 @@ bengalos-amd64-immutable:
 bengalos-sdm670-immutable:
 	$(MAKE) DEVICE=sdm670 FLAVOR=immutable bengalos
 
+bengalos-sdm845-immutable:
+	$(MAKE) DEVICE=sdm845 FLAVOR=immutable bengalos
+
 bengalos-amd64-development:
 	$(MAKE) DEVICE=amd64 FLAVOR=development bengalos
 
