@@ -157,30 +157,33 @@ test:immutable:nightly:amd64:
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PROJECT_PATH == "BengalOS-team/bengalos-recipes" && $CI_PIPELINE_SOURCE == "schedule"'
 
-
-publish:immutable:nightly:amd64:
+# Device with specific test jobs
+publish:immutable:nightly:
   extends: .publish:immutable:nightly
-  variables:
-    DEVICE: amd64
+  parallel:
+    matrix:
+      - DEVICE:
+          - amd64
   needs:
-    - job: test:immutable:nightly:amd64
+    - job: test:immutable:nightly:$[[ matrix.DEVICE ]]
       artifacts: true
 
-
-publish:immutable:nightly:sdm670:
+# Device without device specific test jobs
+publish:immutable:nightly:untested:
   extends: .publish:immutable:nightly
-  variables:
-    DEVICE: sdm670
+  parallel:
+    matrix:
+      - DEVICE:
+          - sdm670
+          - sdm845
   needs:
-    # TODO: no test job for sdm670 yet :(…
     - job: build:immutable:nightly
       artifacts: true
       parallel:
         matrix:
-          - DEVICE: sdm670
-    # … but make sure the amd64 tests succeed
+          - DEVICE: ['$[[ matrix.DEVICE ]]']
+    # No device specific test jobs yet, so use amd64 tests
     - job: test:immutable:nightly:amd64
-
 
 lint:
   stage: test
@@ -202,6 +205,7 @@ cleanup-blessed:
       - CLEANUP_FOLDER:
           - roaming/x86-64/qemu
           - roaming/arm64/sdm670
+          - roaming/arm64/sdm845
   variables:
     AWS_ACCESS_KEY_ID: $BLESS_KEY
     AWS_SECRET_ACCESS_KEY: $BLESS_SECRET
