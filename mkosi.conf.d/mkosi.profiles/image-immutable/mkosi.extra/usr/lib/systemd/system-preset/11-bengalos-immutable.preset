@@ -7,6 +7,10 @@ disable apt-listchanges.timer
 # start due to the missing avahi user
 disable avahi-daemon.*
 
+# Phosh & GNOME don't have user-space wiring, we need something as
+# https://www.volkerkrause.eu/2026/08/15/kde-nfc-integration.html
+disable neard.*
+
 # Disable automatic updates as we don't want them to happen on
 # e.g. mobile data
 disable systemd-sysupdate.*
