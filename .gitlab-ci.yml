@@ -133,6 +133,40 @@ test:immutable:nightly:amd64:
       - "smoke-*.png"
 
 
+test:immutable:nightly:sdm670:
+  stage: test
+  tags: ["bengalos-phone-ci"]
+  # Allow failure until we're certin things are robust
+  allow_failure: true
+  variables:
+    DEVICE: sdm670
+    TESTS: bengalos-phone-ci
+  needs:
+    - job: build:immutable:nightly
+      artifacts: true
+      parallel:
+        matrix:
+          - DEVICE: sdm670
+  before_script:
+    - git clone --depth 1 https://salsa.debian.org/BengalOS-team/${TESTS}
+  script:
+    - |
+      rm -f *.img
+      HASH=$(awk '{ print $1 }' build-${DEVICE}-immutable/*/hash | head -n 1)
+      echo "Testing ${HASH}"
+      TMPDIR=. time ./helpers/get-img.sh --type img --hash "${HASH}"
+      IMG=$(ls -1  *img)
+      echo "⚡💾 Flashing ${IMG}…"
+      pytest --verbose --junitxml=devices-report.xml --device-group=sdm670 --devices=${TESTS}/devices.yaml --image="${IMG}" ${TESTS}
+  artifacts:
+    when: always
+    reports:
+      junit: devices-report.xml
+    paths:
+      - build-$DEVICE-immutable/*/hash
+      - "*.log"
+
+
 .publish:immutable:nightly:
   stage: publish
   tags: ["phosh-images"]
@@ -157,8 +191,7 @@ test:immutable:nightly:amd64:
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PROJECT_PATH == "BengalOS-team/bengalos-recipes" && $CI_PIPELINE_SOURCE == "schedule"'
 
-# Device with specific test jobs
-publish:immutable:nightly:
+publish:immutable:nightly:amd64:
   extends: .publish:immutable:nightly
   parallel:
     matrix:
@@ -168,13 +201,25 @@ publish:immutable:nightly:
     - job: test:immutable:nightly:$[[ matrix.DEVICE ]]
       artifacts: true
 
-# Device without device specific test jobs
-publish:immutable:nightly:untested:
+# Devices with device specific test jobs
+publish:immutable:nightly:tested:
   extends: .publish:immutable:nightly
   parallel:
     matrix:
       - DEVICE:
           - sdm670
+  needs:
+    - job: test:immutable:nightly:$[[ matrix.DEVICE ]]
+      artifacts: true
+    # amd64 gates all device builds
+    - job: test:immutable:nightly:amd64
+
+# Devices without device specific test jobs (yet)
+publish:immutable:nightly:untested:
+  extends: .publish:immutable:nightly
+  parallel:
+    matrix:
+      - DEVICE:
           - sdm845
   needs:
     - job: build:immutable:nightly
@@ -182,7 +227,7 @@ publish:immutable:nightly:untested:
       parallel:
         matrix:
           - DEVICE: ['$[[ matrix.DEVICE ]]']
-    # No device specific test jobs yet, so use amd64 tests
+    # No device specific test jobs yet, so use amd64 tests only
     - job: test:immutable:nightly:amd64
 
 lint:
