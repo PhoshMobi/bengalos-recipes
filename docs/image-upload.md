@@ -46,8 +46,9 @@ These commands need `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`,
 
 ### Publish
 
-To bless an image and make it publically available the metadata hash is passed to `helpers/bless.sh`.
-This transfers the metadata and images to public S3 bucket (`bengalos-images`).
+To bless an image and make it publically available the metadata hash is passed
+to `helpers/bless.sh`. This transfers the metadata and images to public S3
+bucket (`bengalos-images`).
 
 - Contains blessed images only
 - Consumed by via `systemd-sysupate`

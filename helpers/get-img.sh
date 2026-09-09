@@ -5,6 +5,7 @@ set -e
 TOPLEVEL=${PWD}
 BUCKET=bengalos-staging
 TMPDIR="$(mktemp -d)"
+TYPE=img
 OUTPUT_DIR=.
 
 function cleanup()
@@ -18,11 +19,13 @@ trap cleanup EXIT
 function help()
 {
     cat <<EOF
-Usage: $0 [-H|--hash]
+Usage: $0 [-H|--hash] [-t|--type img|qcow2] [-o|--outputdir dir]
 
-Get the qcow2 from a staging build
+Get the image from a staging build
 
   --hash:             The hash identifying the build
+  --type:             Image type to download
+  --output-dir:       Output directory, default is $OUTPUT_DIR
 EOF
 }
 
@@ -36,6 +39,10 @@ while [ -n "$1" ]; do
         shift
         HASH=$1
         ;;
+    -t|--type)
+        shift
+        TYPE=$1
+        ;;
     -o|--output-dir)
         shift
         OUTPUT_DIR=$1
@@ -46,6 +53,16 @@ while [ -n "$1" ]; do
   esac
   shift
 done
+
+
+case "$TYPE" in
+    img|qcow2)
+        ;;
+    *)
+        echo "Unknown image type $TYPE"
+        ;;
+esac
+
 
 function fetch()
 {
@@ -60,14 +77,15 @@ function fetch()
       exit 1
   fi
   wget -nv -O "${TMPDIR}/SHA256SUMS" "${endpoint_url}/${sha256sums}"
-  qcow2_xz=$(awk '/.qcow2.xz/ { print $2 }' "${TMPDIR}/SHA256SUMS" | head -n 1)
-  if [ -z "${qcow2_xz}" ]; then
-      echo "Failed to get qcow name"
+  img_xz=$(awk "/.${TYPE}.xz/ { print \$2 }" "${TMPDIR}/SHA256SUMS" | head -n 1)
+  if [ -z "${img_xz}" ]; then
+      echo "Failed to get image name"
       exit 1
   fi
-  qcow2=$(basename "${qcow2_xz}" .xz)
-  wget -nv -O- "${endpoint_url}/${qcow2_xz}" | unxz > "${TMPDIR}/${qcow2}"
-  mv "${TMPDIR}/${qcow2}" "${OUTPUT_DIR}"
+  img=$(basename "${img_xz}" .xz)
+  echo "📥 Downloading ${img}"
+  wget -nv -O- "${endpoint_url}/${img_xz}" | unxz > "${TMPDIR}/${img}"
+  mv "${TMPDIR}/${img}" "${OUTPUT_DIR}"
 }
 
 
