@@ -1,1 +1,2 @@
 build-*/
+mkosi.conf.d/mkosi.packages/*.deb
