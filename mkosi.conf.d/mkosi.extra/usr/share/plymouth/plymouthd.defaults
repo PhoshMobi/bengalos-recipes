@@ -1,0 +1,7 @@
+[Daemon]
+Theme=phosh
+ShowDelay=0
+DeviceTimeout=8
+DeviceScale=1
+# Let power button act like escape
+XkbExtraEscButton=0x1008ff2a
