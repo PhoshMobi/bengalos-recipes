@@ -3,6 +3,7 @@
 set -e
 
 cat <<EOF > /etc/locale.gen
+cs_CZ.UTF-8 UTF-8
 de_DE.UTF-8 UTF-8
 en_US.UTF-8 UTF-8
 es_ES.UTF-8 UTF-8
