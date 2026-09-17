@@ -1,4 +1,3 @@
-# Use bootsplash in initrd
 [Daemon]
 Theme=phosh
 ShowDelay=0
