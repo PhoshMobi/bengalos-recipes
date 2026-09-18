@@ -46,7 +46,7 @@ default:
   tags: ["phosh-images"]
   resource_group: phoshimages
   rules:
-    - if: '$CI_PROJECT_IS_FORK == "false"'
+    - if: '$CI_PROJECT_PATH == "BengalOS-team/bengalos-recipes"'
     - when: never
 
 build:dev:nightly:amd64:
