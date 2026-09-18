@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# SHIFT6mq (axolotl) specific cleanup.
+#
+# Initrd config needs to be at the toplevel so we run this on
+# all devices.
+# 
+# TODO: recheck if this is really needed once we have serial
+# console.
+
+set -e
+
+FIRMWARES_PATH="/lib/firmware/qcom/sdm845/SHIFT/axolotl/"
+FIRMWARES="wlanmdsp.mbn mba.mbn"
+
+for firmware in ${FIRMWARES}; do
+  file="${FIRMWARES_PATH}/${firmware}"
+  if [ -L "${file}" ]; then
+    echo "Removing ${file}…"
+    rm "${file}"
+  fi
+done
