@@ -42,10 +42,16 @@ default:
 .clear_gpg_key: &clear_gpg_key
   - rm -rf $GNUPGHOME
 
-build:dev:nightly:amd64:
-  stage: build
+.blessed_builder_only: &blessed_builder_only
   tags: ["phosh-images"]
   resource_group: phoshimages
+  rules:
+    - if: '$CI_PROJECT_IS_FORK == "false"'
+    - when: never
+
+build:dev:nightly:amd64:
+  stage: build
+  <<: *blessed_builder_only
   variables:
     DEVICE: amd64
     FLAVOR: development
@@ -63,8 +69,7 @@ build:dev:nightly:amd64:
 
 .build:immutable:nightly:
   stage: build
-  tags: ["phosh-images"]
-  resource_group: phoshimages
+  <<: *blessed_builder_only
   variables:
     FLAVOR: immutable
     AWS_ACCESS_KEY_ID: $PUSH_KEY
@@ -111,8 +116,7 @@ build:immutable:nightly:
 
 test:immutable:nightly:amd64:
   stage: test
-  tags: ["phosh-images"]
-  resource_group: phoshimages
+  <<: *blessed_builder_only
   needs:
     - job: build:immutable:nightly
       artifacts: true
@@ -135,9 +139,9 @@ test:immutable:nightly:amd64:
 
 test:immutable:nightly:sdm670:
   stage: test
+  <<: *blessed_builder_only
   tags: ["bengalos-phone-ci"]
-  resource_group: phoshimages
-  # Allow failure until we're certin things are robust
+  # Allow failure until we're certain things are robust
   allow_failure: true
   variables:
     DEVICE: sdm670
@@ -170,8 +174,7 @@ test:immutable:nightly:sdm670:
 
 .publish:immutable:nightly:
   stage: publish
-  tags: ["phosh-images"]
-  resource_group: phoshimages
+  <<: *blessed_builder_only
   variables:
     AWS_ACCESS_KEY_ID: $BLESS_KEY
     AWS_SECRET_ACCESS_KEY: $BLESS_SECRET
@@ -244,8 +247,7 @@ lint:
 
 cleanup-blessed:
   stage: cleanup
-  tags: ["phosh-images"]
-  resource_group: phoshimages
+  <<: *blessed_builder_only
   parallel:
     matrix:
       - CLEANUP_FOLDER:
