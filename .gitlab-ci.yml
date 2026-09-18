@@ -136,6 +136,7 @@ test:immutable:nightly:amd64:
 test:immutable:nightly:sdm670:
   stage: test
   tags: ["bengalos-phone-ci"]
+  resource_group: phoshimages
   # Allow failure until we're certin things are robust
   allow_failure: true
   variables:
