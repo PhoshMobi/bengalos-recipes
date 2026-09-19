@@ -46,7 +46,12 @@ default:
   tags: ["phosh-images"]
   resource_group: phoshimages
   rules:
+    # Don't run on MRs created from forks
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH != $CI_PROJECT_PATH'
+      when: never
+    # Only the canonical project
     - if: '$CI_PROJECT_PATH == "BengalOS-team/bengalos-recipes"'
+      when: on_success
     - when: never
 
 build:dev:nightly:amd64:
