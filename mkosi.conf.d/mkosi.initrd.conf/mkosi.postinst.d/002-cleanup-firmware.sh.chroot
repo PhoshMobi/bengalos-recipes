@@ -1,0 +1,25 @@
+#!/bin/bash
+#
+# Removing unneeded Qualcomm firmware makes
+# the initrd much smaller.
+
+set -e
+
+# Sort alphabetically
+DROP_FOLDERS=(
+  apq8016
+  apq8096
+  glymur
+  qrb4210
+  sa8775p
+  sc8280xp
+  sdx35
+  sdx61
+  sm8750
+  x1e80100
+)
+
+# TODO: Should use FirmwareFiles=
+for folder in "${DROP_FOLDERS[@]}"; do
+  rm -rf /usr/lib/firmware/qcom/${folder}
+done
