@@ -25,14 +25,17 @@ mention it in the image downloads.
 
 ### Google Pixel 3:
 
-  - David Heidelberg
+  - David Heidelberg (@dh)
 
 ### Google Pixel 3a:
 
-  - Guido Günther
+  - Guido Günther (@agx)
+
+### OnePlus 6
+
+  - Manuel Traut (@manut)
 
 ### SHIFT6mq:
 
-  - David Heidelberg
-  - Guido Günther
-
+  - David Heidelberg (@dh)
+  - Guido Günther (@agx)
