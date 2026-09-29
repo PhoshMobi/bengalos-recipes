@@ -15,6 +15,7 @@ disable neard.*
 # e.g. mobile data
 disable systemd-sysupdate.*
 disable systemd-sysupdate-reboot.*
+disable systemd-sysupdate-update.*
 
 # Blocks user lookup on first boot
 disable systemd-nsresourced.*
