@@ -34,32 +34,32 @@ A sysext is overlayed onto the root filesystem. Create the files you want to ove
 under `/var/lib/extensions` e.g. for an extension to test `ucm` profiles:
 
 ```console
-/var/extensions/
-/var/extensions/ucm
-/var/extensions/ucm/usr
-/var/extensions/ucm/usr/lib
-/var/extensions/ucm/usr/lib/extension-release.d
-/var/extensions/ucm/usr/lib/extension-release.d/extension-release.ucm
-/var/extensions/ucm/usr/share
-/var/extensions/ucm/usr/share/alsa
-/var/extensions/ucm/usr/share/alsa/ucm2
-/var/extensions/ucm/usr/share/alsa/ucm2/Google
-/var/extensions/ucm/usr/share/alsa/ucm2/Google/sargo
-/var/extensions/ucm/usr/share/alsa/ucm2/Google/sargo/HiFi.conf
-/var/extensions/ucm/usr/share/alsa/ucm2/Google/sargo/sargo.conf
-/var/extensions/ucm/usr/share/alsa/ucm2/Google/sargo/VoiceCall.conf
+/var/lib/extensions/
+/var/lib/extensions/ucm
+/var/lib/extensions/ucm/usr
+/var/lib/extensions/ucm/usr/lib
+/var/lib/extensions/ucm/usr/lib/extension-release.d
+/var/lib/extensions/ucm/usr/lib/extension-release.d/extension-release.ucm
+/var/lib/extensions/ucm/usr/share
+/var/lib/extensions/ucm/usr/share/alsa
+/var/lib/extensions/ucm/usr/share/alsa/ucm2
+/var/lib/extensions/ucm/usr/share/alsa/ucm2/Google
+/var/lib/extensions/ucm/usr/share/alsa/ucm2/Google/sargo
+/var/lib/extensions/ucm/usr/share/alsa/ucm2/Google/sargo/HiFi.conf
+/var/lib/extensions/ucm/usr/share/alsa/ucm2/Google/sargo/sargo.conf
+/var/lib/extensions/ucm/usr/share/alsa/ucm2/Google/sargo/VoiceCall.conf
 ```
 
 The `extension-release.ucm` file describes the extension:
 
 ```console
-$ cat /var/extensions/ucm/usr/lib/extension-release.d/extension-release.ucm
+$ cat /var/lib/extensions/ucm/usr/lib/extension-release.d/extension-release.ucm
 ID=bengalos
 VERSION_ID=0.26.0924.1
 SYSEXT_LEVEL=1
 ```
 
-You can get the matching `VERSION_ID` from `/etc/os-info` on your device.
+You can get the matching `VERSION_ID` from `/etc/os-release` on your device.
 Afterwards you run:
 
 ```sh
