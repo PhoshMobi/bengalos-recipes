@@ -12,6 +12,25 @@ behavior. Both images start a first-boot wizard to create the initial user.
 > All images contain a `root` user with a default password. Make sure to change that
 > when you're doing more than a quick test.
 
+## Build requirements
+
+It is recommend to use [Debian OS (forky)](https://www.debian.org/releases/forky/) for building.
+Any other OS is not guaranteed to work.
+
+You will need the following packages:
+
+``` sh
+sudo apt install mkosi qemu-user-static
+```
+
+If you are running older versions of Debian, you can try using the [latest release of `mkosi`](https://github.com/systemd/mkosi#running-mkosi-from-the-repository):
+
+``` sh
+git clone https://github.com/systemd/mkosi
+ln -s $PWD/mkosi/bin/mkosi ~/.local/bin/mkosi
+mkosi --version
+```
+
 ## Immutable Images
 
 The immutable images are what one expects from a phone-like operating system. The
@@ -24,13 +43,9 @@ For already built images see [here](https://bengalos.phosh.mobi/images/).
 ### Building the Immutable Image
 
 Note that these images are currently experimental and meant for use in virtual
-machines only. You can install the required packages in a Debian OS as:
+machines only.
 
-``` sh
-sudo apt install mkosi
-```
-
-Then setup and build using:
+Setup and build using:
 
 ``` sh
 make bengalos-amd64-immutable
@@ -66,14 +81,9 @@ the Phosh nightly packages. We usually refer to the mutable images as
 
 ### Building the Mutable Image
 
-Note that these images are currently experimental and meant for use in virtual machines only. You
-can install the required packages in a Debian OS as:
+Note that these images are currently experimental and meant for use in virtual machines only.
 
-``` sh
-sudo apt install mkosi
-```
-
-Then setup and build using:
+Setup and build using:
 
 ``` sh
 make bengalos-amd64-development
