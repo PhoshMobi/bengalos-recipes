@@ -53,8 +53,9 @@ make bengalos-amd64-immutable
 
 ### Running the Immutable Image
 
-The built image is stored in `BengalOS_<version>.raw`. To run the image in a VM, you can use
-the following command:
+The built image is stored in
+`build-<device>-<flavor>/mkosi.output/BengalOS_<version>.raw`. To run the image
+in a VM, you can use the following command:
 
 ``` sh
 make bengalos-amd64-immutable-run
