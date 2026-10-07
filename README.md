@@ -23,7 +23,9 @@ You will need the following packages:
 sudo apt install mkosi qemu-user-static
 ```
 
-If you are running older versions of Debian, you can try using the [latest release of `mkosi`](https://github.com/systemd/mkosi#running-mkosi-from-the-repository):
+If you are running older versions of Debian, you can try using the [latest
+release of
+`mkosi`](https://github.com/systemd/mkosi#running-mkosi-from-the-repository):
 
 ``` sh
 git clone https://github.com/systemd/mkosi
