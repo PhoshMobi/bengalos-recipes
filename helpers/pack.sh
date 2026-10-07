@@ -106,6 +106,17 @@ function pack() {
     xz --stdout "mkosi.output/${base}" > "${compressed}.temp"
     mv "${compressed}.temp" "${compressed}"
   done
+
+  # sysexts
+  for sysext in mkosi.output/BengalOS-*-sysext_"${VERSION}".raw; do
+    local filename
+    filename=$(basename "${sysext}")
+    local compressed="${VERSION}/${filename}.xz"
+    echo "📦 Creating ${compressed}…"
+    xz --stdout "${sysext}" > "${compressed}.temp"
+    mv "${compressed}.temp" "${compressed}"
+  done
+
   cp "mkosi.output/BengalOS_${VERSION}.osrelease" "${VERSION}"
   cp "mkosi.output/BengalOS_${VERSION}.manifest" "${VERSION}"
 }
@@ -119,7 +130,7 @@ function sign() {
   cd "${VERSION}"
   checksums="${VERSION}.SHA256SUMS"
   signature="${VERSION}.SHA256SUMS.gpg"
-  sha256sum BengalOS_*.xz BengalOS_*.osrelease BengalOS_*.manifest > "${checksums}.tmp"
+  sha256sum BengalOS_*.xz BengalOS-*-sysext_*.raw.xz BengalOS_*.osrelease BengalOS_*.manifest > "${checksums}.tmp"
   mv "${checksums}.tmp" "${checksums}"
   gpg --sign --default-key="${SIGNING_KEY}" --detach-sign --armor -o "${signature}" "${checksums}"
   ln -sf "${checksums}" SHA256SUMS
