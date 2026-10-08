@@ -17,8 +17,8 @@ workflow:
 
 variables:
   PHOSH_IMAGE_BRANCH: main
-  PHOSH_IMAGE_UPLOAD_OPTS: --verbose
   LINT_DEPS: black flake8 markdownlint shellcheck mypy
+  IMAGE_BUILD_DEPS: make mkosi
 
 default:
   timeout: 36 hours
@@ -42,6 +42,7 @@ default:
 .clear_gpg_key: &clear_gpg_key
   - rm -rf $GNUPGHOME
 
+# Blessed builder runs only in the canonical project
 .blessed_builder_only: &blessed_builder_only
   tags: ["phosh-images"]
   resource_group: phoshimages
@@ -51,6 +52,15 @@ default:
       when: never
     # Only the canonical project
     - if: '$CI_PROJECT_PATH == "BengalOS-team/bengalos-recipes"'
+      when: on_success
+    - when: never
+
+# MRs from forks against our blessed repo run on our scratch builder
+.mr_from_fork_for_blessed: &mr_from_fork_for_blessed
+  tags: ["bengalos:image:arm64"]
+  rules:
+    # Only MRs from forks targeting the canonical project
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_PROJECT_PATH == "BengalOS-team/bengalos-recipes" && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH != "BengalOS-team/bengalos-recipes"'
       when: on_success
     - when: never
 
@@ -118,6 +128,25 @@ build:immutable:nightly:
       - DEVICE: sdm670
       - DEVICE: sdm845
 
+build:immutable:scratch:arm64:
+  stage: build
+  image: debian:forky
+  <<: *mr_from_fork_for_blessed
+  variables:
+    FLAVOR: immutable
+  parallel:
+    matrix:
+      - DEVICE: sdm670
+      - DEVICE: sdm845
+  before_script:
+    - apt update
+    - apt -y install ${IMAGE_BUILD_DEPS}
+  script:
+    - git clone https://github.com/systemd/mkosi
+    - git -C mkosi checkout v27.1
+    - export PATH=$PWD/mkosi/bin:$PATH
+    - XDG_CACHE_HOME=~/.cache make clean
+    - XDG_CACHE_HOME=~/.cache make bengalos
 
 test:immutable:nightly:amd64:
   stage: test
