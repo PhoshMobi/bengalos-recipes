@@ -86,7 +86,7 @@ fi
 VERSION=$(cat "$VERSION_FILE")
 
 function prep() {
-    cd "${TOPLEVEL}/build-${DEVICE}-immutable/mkosi.output/"
+    cd "${TOPLEVEL}/build-${DEVICE}-immutable/"
     mkdir -p "${VERSION}"
 }
 
@@ -98,15 +98,27 @@ function pack() {
   # In not qcow2 use the raw disk image
   is_qcow2_arch && img=qcow2 || img=img
 
+  # Main image
   for part in "${img}" usr.raw usr-verity.raw usr-verity-sig.raw efi; do
     local base="BengalOS_${VERSION}.${part}"
     local compressed="${VERSION}/BengalOS_${VERSION}.${part}.xz"
     echo "📦 Creating ${compressed}…"
-    xz --stdout "${base}" > "${compressed}.temp"
+    xz --stdout "mkosi.output/${base}" > "${compressed}.temp"
     mv "${compressed}.temp" "${compressed}"
   done
-  cp "BengalOS_${VERSION}.osrelease" "${VERSION}"
-  cp "BengalOS_${VERSION}.manifest" "${VERSION}"
+
+  # sysexts
+  for sysext in mkosi.output/BengalOS-*-sysext_"${VERSION}".raw; do
+    local filename
+    filename=$(basename "${sysext}")
+    local compressed="${VERSION}/${filename}.xz"
+    echo "📦 Creating ${compressed}…"
+    xz --stdout "${sysext}" > "${compressed}.temp"
+    mv "${compressed}.temp" "${compressed}"
+  done
+
+  cp "mkosi.output/BengalOS_${VERSION}.osrelease" "${VERSION}"
+  cp "mkosi.output/BengalOS_${VERSION}.manifest" "${VERSION}"
 }
 
 function sign() {
@@ -118,7 +130,7 @@ function sign() {
   cd "${VERSION}"
   checksums="${VERSION}.SHA256SUMS"
   signature="${VERSION}.SHA256SUMS.gpg"
-  sha256sum BengalOS_*.xz BengalOS_*.osrelease BengalOS_*.manifest > "${checksums}.tmp"
+  sha256sum BengalOS_*.xz BengalOS-*-sysext_*.raw.xz BengalOS_*.osrelease BengalOS_*.manifest > "${checksums}.tmp"
   mv "${checksums}.tmp" "${checksums}"
   gpg --sign --default-key="${SIGNING_KEY}" --detach-sign --armor -o "${signature}" "${checksums}"
   ln -sf "${checksums}" SHA256SUMS
@@ -143,8 +155,8 @@ function upload() {
 }
 
 function mk_qcow2() {
-  local raw="BengalOS_${VERSION}.raw"
-  local qcow2="BengalOS_${VERSION}.qcow2"
+  local raw="mkosi.output/BengalOS_${VERSION}.raw"
+  local qcow2="mkosi.output/BengalOS_${VERSION}.qcow2"
 
   is_qcow2_arch || return 0
 
