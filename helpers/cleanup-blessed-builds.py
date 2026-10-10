@@ -149,6 +149,33 @@ def choose_builds_to_keep(builds):
     return keep
 
 
+def update_index(tmpdir, endpoint, bucket, folder, dry_run):
+    with open(f"{tmpdir}/index.html", "w") as index:
+        print(f"""<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Index of {bucket}/{folder}/</title>
+  </head>
+  <body>
+    <ul>
+""", file=index)
+
+        with open(f"{tmpdir}/SHA256SUMS") as checksums:
+            for line in checksums:
+                checksum, name = line.split()
+                print(f"        <li><a href='./{name}'>{name}</li>", file=index)
+        print("""
+    </ul>
+  </body>
+</html>""", file=index)
+
+    if dry_run:
+        return 0
+
+    print("Uploading new checksum files")
+    s3.upload_file(f"{tmpdir}/index.html", bucket, f"{folder}/index.html", ExtraArgs={"ContentType": "text/html"})
+
+
 def delete_old_builds(bucket, folder, builds, keep, dry_run):
     objects_to_delete = []
 
@@ -177,7 +204,7 @@ def delete_old_builds(bucket, folder, builds, keep, dry_run):
     return True
 
 
-def update_sha256sums(bucket, folder, to_keep, keyid, dry_run):
+def update_sha256sums(endpoint, bucket, folder, to_keep, keyid, dry_run):
     with tempfile.TemporaryDirectory() as tmpdir:
 
         s3.download_file(bucket, f"{folder}/SHA256SUMS", f"{tmpdir}/SHA256SUMS.old")
@@ -240,21 +267,22 @@ def update_sha256sums(bucket, folder, to_keep, keyid, dry_run):
         if dry_run:
             print("\nNew SHA256SUMS:")
             print(f"{new_sha256sums}")
-            return 0
+        else:
+            print("Uploading new checksum files")
+            s3.upload_file(f"{tmpdir}/SHA256SUMS", bucket, f"{folder}/SHA256SUMS")
+            s3.upload_file(f"{tmpdir}/SHA256SUMS.gpg", bucket, f"{folder}/SHA256SUMS.gpg")
 
-        print("Uploading new checksum files")
-        s3.upload_file(f"{tmpdir}/SHA256SUMS", bucket, f"{folder}/SHA256SUMS")
-        s3.upload_file(f"{tmpdir}/SHA256SUMS.gpg", bucket, f"{folder}/SHA256SUMS.gpg")
+            # TODO: Current systemd looks at SHA256SUMS.sha256.asc.
+            # Recheck with systemd 261 and file issue if still present
+            copy_source = {"Bucket": bucket, "Key": f"{folder}/SHA256SUMS.gpg"}
 
-        # TODO: Current systemd looks at SHA256SUMS.sha256.asc.
-        # Recheck with systemd 261 and file issue if still present
-        copy_source = {"Bucket": bucket, "Key": f"{folder}/SHA256SUMS.gpg"}
+            s3.copy_object(
+                Bucket=bucket, CopySource=copy_source, Key=f"{folder}/SHA256SUMS.sha256.asc"
+            )
+            print("Cleanup done.")
 
-        s3.copy_object(
-            Bucket=bucket, CopySource=copy_source, Key=f"{folder}/SHA256SUMS.sha256.asc"
-        )
+        update_index(tmpdir, endpoint, bucket, folder, dry_run)
 
-        print("Cleanup done.")
         return 0
 
 
@@ -271,6 +299,9 @@ def main():
     )
     parser.add_argument(
         "--bucket", type=str, default=BUCKET, help="bucket to run expiry in"
+    )
+    parser.add_argument(
+        "--refresh", action="store_true", help="Refresh checksum and index even when nothing changed",
     )
     args = parser.parse_args()
 
@@ -309,8 +340,8 @@ def main():
 
     print()
     deleted = delete_old_builds(args.bucket, args.folder, builds, keep, args.dry_run)
-    if deleted:
-        ret = update_sha256sums(args.bucket, args.folder, keep, keyid, args.dry_run)
+    if deleted or args.refresh:
+        ret = update_sha256sums(endpoint, args.bucket, args.folder, keep, keyid, args.dry_run)
     else:
         ret = 0
 
