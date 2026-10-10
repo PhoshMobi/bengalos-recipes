@@ -62,7 +62,7 @@ def discover_builds(bucket, folder, objects):
         build_id = m.group(1)
 
         build_date = datetime.strptime(
-            "20" + m.group(2) +  m.group(3),
+            "20" + m.group(2) + m.group(3),
             "%Y%m%d",
         ).replace(tzinfo=timezone.utc)
 
