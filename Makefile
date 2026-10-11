@@ -43,7 +43,7 @@ deps:
 pylint:
 	mypy *.py
 	black --check *.py
-	flake8 *.py
+	flake8 *.py helpers/*.py
 
 shellcheck:
 	shellcheck helpers/*.sh
