@@ -7,6 +7,7 @@
 # Expire old blessed builds
 
 import argparse
+import html
 import os
 import re
 import subprocess
@@ -14,6 +15,8 @@ import sys
 import tempfile
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from string import Template
 
 import boto3
 
@@ -23,6 +26,7 @@ PREFIX = "roaming/x86-64/qemu"
 s3 = boto3.client("s3")
 
 BUILD_RE = re.compile(r"BengalOS_(\d\.(\d{2})\.(\d{4})\.\d+)")
+VERSION_RE = re.compile(r"BengalOS.*_(?P<version>\d\.(\d{2})\.(\d{4})\.\d+)")
 
 
 def list_objects(bucket, folder):
@@ -150,24 +154,64 @@ def choose_builds_to_keep(builds):
 
 
 def update_index(tmpdir, endpoint, bucket, folder, dry_run):
-    with open(f"{tmpdir}/index.html", "w") as index:
-        print(f"""<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <title>Index of {bucket}/{folder}/</title>
-  </head>
-  <body>
-    <ul>
-""", file=index)
+    source = Path(__file__).parent / "index.html"
+    output = Path(tmpdir)
 
-        with open(f"{tmpdir}/SHA256SUMS") as checksums:
-            for line in checksums:
-                checksum, name = line.split()
-                print(f"        <li><a href='./{name}'>{name}</li>", file=index)
-        print("""
-    </ul>
-  </body>
-</html>""", file=index)
+    files = []
+
+    with (output / "SHA256SUMS").open(encoding="utf-8") as checksums:
+        for line in checksums:
+            if not line.strip():
+                continue
+
+            checksum, name = line.rstrip("\n").split(maxsplit=1)
+            name = name.removeprefix("*")
+            m = VERSION_RE.match(name)
+            version = m.group("version") if m else ""
+
+            files.append({
+                "name": name,
+                "checksum": checksum,
+                "version": version
+            })
+
+    # Sort by version, then by name
+    files.sort(
+        key=lambda f: (f["version"].casefold(), f["name"].casefold()),
+        reverse=True,
+    )
+
+    rows = []
+    current_version = ""
+    for file in files:
+        name = html.escape(file["name"])
+        checksum = html.escape(file["checksum"])
+        version = file["version"]
+
+        if version != current_version:
+            current_version = version
+            tr_class = "version_start"
+        else:
+            tr_class = ""
+
+        rows.append(f"""      <tr class="{tr_class}">
+            <td><a href="./{name}">{name}</a></td>
+            <td class="checksum">
+              <code>{checksum}</code>
+            </td>
+          </tr>""")
+
+    template = Template(
+        (source / "index.html").read_text(encoding="utf-8")
+    )
+
+    page = template.substitute(
+        title=html.escape(f"{bucket}/{folder}/"),
+        rows="\n".join(rows),
+        css=(source / "styles.css").read_text(encoding="utf-8"),
+    )
+
+    (output / "index.html").write_text(page, encoding="utf-8")
 
     if dry_run:
         return 0
