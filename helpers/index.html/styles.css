@@ -1,0 +1,64 @@
+body {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  font: 1rem/1.5 system-ui, sans-serif;
+}
+
+h1 {
+  font-size: 1.75rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+tr.version_start {
+    border-top: 2px solid #ccc;
+}
+
+th,
+td {
+  padding: .5rem;
+  vertical-align: top;
+}
+
+.checksum {
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+}
+
+.checksum code {
+  font: .8rem/1.5 monospace;
+  overflow-wrap: anywhere;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #222;
+    color: #eee;
+  }
+
+  a {
+    color: #8cf;
+  }
+
+  th,
+  td {
+    border-color: #555;
+  }
+}
+
+@media (max-width: 600px) {
+  th,
+  td {
+    padding: .4rem;
+  }
+
+  .checksum {
+    flex-wrap: wrap;
+  }
+}
