@@ -1,6 +1,7 @@
 ---
 
 stages:
+  - prereq
   - build
   - test
   - publish
@@ -205,6 +206,15 @@ test:immutable:nightly:sdm670:
       - build-$DEVICE-immutable/*/hash
       - "*.log"
 
+# Make sure that outdated BengalOS packages can't break our images
+run_package_tracker:
+  stage: prereq
+  rules:
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PROJECT_PATH == "BengalOS-team/bengalos-recipes" && $CI_PIPELINE_SOURCE == "schedule"'
+  trigger:
+    project: BengalOS-team/bengalos-package-tracker
+    branch: main
+    strategy: mirror
 
 .publish:immutable:nightly:
   stage: publish
@@ -238,6 +248,7 @@ publish:immutable:nightly:amd64:
   needs:
     - job: test:immutable:nightly:$[[ matrix.DEVICE ]]
       artifacts: true
+    - job: run_package_tracker
 
 # Devices with device specific test jobs
 publish:immutable:nightly:tested:
@@ -251,6 +262,7 @@ publish:immutable:nightly:tested:
       artifacts: true
     # amd64 gates all device builds
     - job: test:immutable:nightly:amd64
+    - job: run_package_tracker
 
 # Devices without device specific test jobs (yet)
 publish:immutable:nightly:untested:
@@ -267,6 +279,7 @@ publish:immutable:nightly:untested:
           - DEVICE: ['$[[ matrix.DEVICE ]]']
     # No device specific test jobs yet, so use amd64 tests only
     - job: test:immutable:nightly:amd64
+    - job: run_package_tracker
 
 lint:
   stage: test
