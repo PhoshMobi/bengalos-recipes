@@ -215,6 +215,8 @@ run_package_tracker:
     project: BengalOS-team/bengalos-package-tracker
     branch: main
     strategy: mirror
+    forward:
+      yaml_variables: false
 
 .publish:immutable:nightly:
   stage: publish
