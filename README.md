@@ -134,7 +134,7 @@ If you want to help with this project, please have a look at the [Contributors
 manual](https://dev.phosh.mobi/docs/).
 
 In case you need more information, feel free to get in touch with the developers on
-[#bengalos:phosh.mobi](https://matrix.to/#/#bengalos:phosh.mobi).
+[#BengalOS:phosh.mobi](https://matrix.to/#/#BengalOS:phosh.mobi).
 
 The issue tracker is at <https://salsa.debian.org/BengalOS-team/bengalos-recipes/issues/>
 
