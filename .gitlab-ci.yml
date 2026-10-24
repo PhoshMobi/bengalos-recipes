@@ -77,7 +77,7 @@ build:dev:nightly:amd64:
       if [ -n "${PHOSH_IMAGE_HOST}" ] && \
          [ -n "${PHOSH_IMAGE_UPLOAD}" ] && \
          [ "${CI_COMMIT_BRANCH}" = "${PHOSH_IMAGE_BRANCH}" ]; then
-        ls -lh build-${DEVICE}-${FLAVOR}/BengalOS_*
+        ls -lh build-${DEVICE}-${FLAVOR}/mkosi.output/BengalOS_*
         time make IMAGE_HOST="${PHOSH_IMAGE_HOST}" upload
       else
         echo "Skipping upload on ${CI_COMMIT_BRANCH}."
