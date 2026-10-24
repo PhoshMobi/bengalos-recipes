@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -e
+
+mkdir -p /usr/lib/extension-release.d
+
+cat <<EOF > /usr/lib/extension-release.d/extension-release.${IMAGE_ID}-waydroid-sysext_${IMAGE_VERSION}
+ID=bengalos
+VERSION_ID=${IMAGE_VERSION}
+ARCHITECTURE=${ARCHITECTURE}
+# Make sure the DBus security policy is applied
+EXTENSION_RELOAD_MANAGER=1
+EXTENSION_RELOAD_OR_RESTART_UNITS=dbus.service
+EOF
