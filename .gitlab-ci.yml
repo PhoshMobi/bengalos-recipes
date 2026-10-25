@@ -20,6 +20,8 @@ variables:
   PHOSH_IMAGE_BRANCH: main
   LINT_DEPS: black flake8 markdownlint shellcheck mypy
   IMAGE_BUILD_DEPS: make mkosi
+  OPENQA_TEST_REPO: "https://salsa.debian.org/BengalOS-team/bengalos-openqa-tests.git"
+  OPENQA_TEST_REF: "main"
 
 default:
   timeout: 36 hours
@@ -149,7 +151,7 @@ build:immutable:scratch:arm64:
     - XDG_CACHE_HOME=~/.cache make clean
     - XDG_CACHE_HOME=~/.cache make bengalos
 
-test:immutable:nightly:amd64:
+smoketest:immutable:nightly:amd64:
   stage: test
   <<: *blessed_builder_only
   needs:
@@ -163,7 +165,7 @@ test:immutable:nightly:amd64:
       rm -f *.qcow2
       HASH=$(awk '{ print $1 }' build-amd64-immutable/*/hash | head -n 1)
       echo "Testing ${HASH}"
-      time ./helpers/get-img.sh --type qcow2 --hash "${HASH}"
+      TMPDIR=. ./helpers/get-img.sh --type qcow2 --hash "${HASH}"
       helpers/smoke-test-vm.sh --name "${HASH}" --disk *.qcow2
   artifacts:
     when: always
@@ -171,6 +173,37 @@ test:immutable:nightly:amd64:
       - build-amd64-immutable/*/hash
       - "smoke-*.png"
 
+test:immutable:nightly:amd64:
+  stage: test
+  tags:
+    - bengalos:amd64:openqa
+  needs:
+    - job: build:immutable:nightly
+      artifacts: true
+      parallel:
+        matrix:
+          - DEVICE: amd64
+  script:
+    - |
+      HASH=$(awk '{ print $1 }' build-amd64-immutable/*/hash | head -n 1)
+      rm -rf openqa-tests/
+      git clone "$OPENQA_TEST_REPO" openqa-tests
+      git -C openqa-tests checkout --detach "$OPENQA_TEST_REF"
+      test -n "$HASH"
+      TMPDIR=. ./helpers/get-img.sh --type qcow2 --hash "$HASH" --output-dir openqa-tests/work/
+      cd openqa-tests
+      ls work/
+      ./run.sh
+  artifacts:
+    when: always
+    expire_in: 2 weeks
+    paths:
+      - build-amd64-immutable/*/hash
+      - openqa-tests/work/*.json
+      - openqa-tests/work/*.log
+      - openqa-tests/work/serial0
+      - openqa-tests/work/testresults/
+      - openqa-tests/work/video.ogv
 
 test:immutable:nightly:sdm670:
   stage: test
@@ -250,6 +283,7 @@ publish:immutable:nightly:amd64:
   needs:
     - job: test:immutable:nightly:$[[ matrix.DEVICE ]]
       artifacts: true
+    - job: smoketest:immutable:nightly:amd64
     - job: run_package_tracker
 
 # Devices with device specific test jobs
@@ -264,6 +298,7 @@ publish:immutable:nightly:tested:
       artifacts: true
     # amd64 gates all device builds
     - job: test:immutable:nightly:amd64
+    - job: smoketest:immutable:nightly:amd64
     - job: run_package_tracker
 
 # Devices without device specific test jobs (yet)
@@ -281,6 +316,7 @@ publish:immutable:nightly:untested:
           - DEVICE: ['$[[ matrix.DEVICE ]]']
     # No device specific test jobs yet, so use amd64 tests only
     - job: test:immutable:nightly:amd64
+    - job: smoketest:immutable:nightly:amd64
     - job: run_package_tracker
 
 lint:
