@@ -164,7 +164,7 @@ function mk_qcow2() {
 
   echo "🐄 Creating qcow2 image…"
   qemu-img convert -f raw -O qcow2 "${raw}" "${qcow2}"
-  qemu-img resize -q -f qcow2 "${qcow2}" 20G
+  qemu-img resize -q -f qcow2 "${qcow2}" 40G
 }
 
 if [ -z "$AWS_ENDPOINT_URL" ] && [ "${PACK_ONLY}" -eq 0 ]; then
