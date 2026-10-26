@@ -71,3 +71,22 @@ the extension will only apply to this image version and that it will be
 disabled automatically on a newer image. If you don't want that look for
 `_any` in the systemd-sysext manpage. If you don't want the extension to
 be persistent across reboots put it into `/run/extensions` instead.
+
+## Debug symbols
+
+To debug e.g. a coredump with debug symbols install the dev sysext first
+
+```sh
+/usr/lib/systemd/systemd-sysupdate enable-feature dev
+/usr/lib/systemd/systemd-sysupdate update <current-version>
+```
+
+then set the URL to Debian's debuginfod:
+
+```sh
+export DEBUGINFOD_URLS="https://debuginfod.debian.net"
+```
+
+from there on `coredumpctl gdb` will fetch the needed symbols. Note that
+the symbols of the nightly built packages are
+[currently missing](https://salsa.debian.org/BengalOS-team/bengalos-plan/-/work_items/10).
