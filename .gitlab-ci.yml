@@ -45,10 +45,7 @@ default:
 .clear_gpg_key: &clear_gpg_key
   - rm -rf $GNUPGHOME
 
-# Blessed builder runs only in the canonical project
-.blessed_builder_only: &blessed_builder_only
-  tags: ["phosh-images"]
-  resource_group: phoshimages
+.blessed_repo_build: &blessed_repo_build
   rules:
     # Don't run on MRs created from forks
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_SOURCE_PROJECT_PATH != $CI_PROJECT_PATH'
@@ -57,6 +54,12 @@ default:
     - if: '$CI_PROJECT_PATH == "BengalOS-team/bengalos-recipes"'
       when: on_success
     - when: never
+
+# Blessed builder runs only in the canonical project
+.blessed_builder_only: &blessed_builder_only
+  extends: .blessed_repo_build
+  tags: ["phosh-images"]
+  resource_group: phoshimages
 
 # MRs from forks against our blessed repo run on our scratch builder
 .mr_from_fork_for_blessed: &mr_from_fork_for_blessed
@@ -174,6 +177,7 @@ smoketest:immutable:nightly:amd64:
       - "smoke-*.png"
 
 test:immutable:nightly:amd64:
+  extends: .blessed_repo_build
   stage: test
   tags:
     - bengalos:amd64:openqa
