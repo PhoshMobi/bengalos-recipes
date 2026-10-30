@@ -177,6 +177,7 @@ smoketest:immutable:nightly:amd64:
       - "smoke-*.png"
 
 test:immutable:nightly:amd64:
+  extends: .blessed_repo_build
   stage: test
   tags:
     - bengalos:amd64:openqa
