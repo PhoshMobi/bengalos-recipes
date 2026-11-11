@@ -27,14 +27,14 @@ build-${DEVICE}-${FLAVOR}/.prep:
 build-${DEVICE}-${FLAVOR}/.done: build-${DEVICE}-${FLAVOR}/.prep
 	mkosi -C build-${DEVICE}-${FLAVOR} -B -i \
 	  --hostname phosh \
-		--profile image-${FLAVOR},device-${DEVICE},zram,phosh \
+		--profile image-${FLAVOR},device-${DEVICE},phosh \
 		${MKOSI_OPTS}
 	touch build-${DEVICE}-${FLAVOR}/.done
 
 bengalos-run: build-${DEVICE}-${FLAVOR}/.done
 	mkosi -C build-${DEVICE}-${FLAVOR} -i \
 		--hostname phosh \
-		--profile image-${FLAVOR},device-${DEVICE},zram,phosh \
+		--profile image-${FLAVOR},device-${DEVICE},phosh \
 		vm
 
 deps:
